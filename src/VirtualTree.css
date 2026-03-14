@@ -1,0 +1,648 @@
+/* =============================================
+   VIRTUAL TREE — Full redesign
+   ============================================= */
+
+/* Container */
+.virtual-tree-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Header */
+.tree-header {
+  text-align: center;
+}
+
+.tree-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0 0 6px 0;
+}
+
+.tree-title-accent {
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tree-header p {
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Main layout */
+.tree-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* =============================================
+   SCENE CARD
+   ============================================= */
+
+.tree-scene-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* Sky gradient — default (daytime) */
+.tree-scene-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #0ea5e9 0%, #38bdf8 35%, #7dd3fc 60%, #86efac 85%, #4ade80 100%);
+  z-index: 0;
+}
+
+/* Night sky for legend stage */
+.tree-scene-legend .tree-scene-sky {
+  background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 30%, #312e81 55%, #166534 80%, #14532d 100%);
+}
+
+/* Dawn sky for ancient stage */
+.tree-scene-ancient .tree-scene-sky {
+  background: linear-gradient(180deg, #1e3a5f 0%, #2d5986 25%, #7c9fc5 50%, #f0a56c 70%, #4ade80 88%, #15803d 100%);
+}
+
+/* Ground strip */
+.tree-scene-ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  background: linear-gradient(180deg, #15803d 0%, #166534 40%, #7d5c33 80%, #6b4c2a 100%);
+  z-index: 1;
+  border-radius: 0 0 20px 20px;
+}
+
+/* SVG wrapper */
+.tree-svg-wrap {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 36px;
+  padding-top: 20px;
+  width: 100%;
+}
+
+.tree-graphic {
+  width: 85%;
+  max-width: 280px;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.25));
+  animation: tree-sway 4s ease-in-out infinite;
+}
+
+/* Per-stage animations */
+.tree-stage-seed .tree-graphic {
+  animation: tree-pulse 2.4s ease-in-out infinite;
+  max-width: 120px;
+}
+
+.tree-stage-sprout .tree-graphic {
+  animation: tree-sway 3s ease-in-out infinite;
+  max-width: 160px;
+}
+
+.tree-stage-seedling .tree-graphic {
+  animation: tree-sway 3.5s ease-in-out infinite;
+  max-width: 200px;
+}
+
+.tree-stage-legend .tree-graphic {
+  animation: legend-glow 2.8s ease-in-out infinite;
+}
+
+/* Keyframes */
+@keyframes tree-sway {
+  0%, 100% { transform: rotate(0deg); transform-origin: center bottom; }
+  25%       { transform: rotate(0.8deg); transform-origin: center bottom; }
+  75%       { transform: rotate(-0.8deg); transform-origin: center bottom; }
+}
+
+@keyframes tree-pulse {
+  0%, 100% { filter: drop-shadow(0 4px 8px rgba(34, 197, 94, 0.2)); transform: scale(1); }
+  50%       { filter: drop-shadow(0 4px 20px rgba(34, 197, 94, 0.55)); transform: scale(1.04); }
+}
+
+@keyframes legend-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3)) drop-shadow(0 4px 14px rgba(0,0,0,0.3)); }
+  50%       { filter: drop-shadow(0 0 22px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 14px rgba(0,0,0,0.3)); }
+}
+
+/* =============================================
+   FLOATING LEAVES
+   ============================================= */
+
+.tree-leaf {
+  position: absolute;
+  z-index: 3;
+  width: 10px;
+  height: 14px;
+  background: radial-gradient(ellipse at 30% 40%, #4ade80, #15803d);
+  border-radius: 50% 50% 50% 0;
+  left: var(--leaf-x, 50%);
+  top: -18px;
+  opacity: 0;
+  animation: leaf-fall var(--leaf-duration, 5s) var(--leaf-delay, 0s) ease-in infinite;
+  transform: rotate(var(--leaf-rotate, 0deg));
+  pointer-events: none;
+}
+
+.tree-scene-legend .tree-leaf {
+  background: radial-gradient(ellipse at 30% 40%, #fbbf24, #d97706);
+}
+
+@keyframes leaf-fall {
+  0%   { transform: translateY(0)    rotate(var(--leaf-rotate, 0deg)) translateX(0);   opacity: 0; }
+  10%  { opacity: 0.9; }
+  90%  { opacity: 0.7; }
+  100% { transform: translateY(380px) rotate(calc(var(--leaf-rotate, 0deg) + 360deg)) translateX(30px); opacity: 0; }
+}
+
+/* =============================================
+   FIREFLIES (legend only)
+   ============================================= */
+
+.tree-firefly {
+  position: absolute;
+  z-index: 4;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, #ffd700, #fbbf24);
+  border-radius: 50%;
+  left: var(--ff-x, 50%);
+  top: var(--ff-y, 50%);
+  pointer-events: none;
+  animation:
+    firefly-blink 1.8s var(--ff-delay, 0s) ease-in-out infinite,
+    firefly-float 4s   var(--ff-delay, 0s) ease-in-out infinite;
+}
+
+@keyframes firefly-blink {
+  0%, 100% { opacity: 0; box-shadow: 0 0 0px #ffd700; }
+  50%       { opacity: 1; box-shadow: 0 0 8px 3px rgba(255, 215, 0, 0.7); }
+}
+
+@keyframes firefly-float {
+  0%, 100% { transform: translate(0, 0); }
+  25%       { transform: translate(8px, -10px); }
+  50%       { transform: translate(-6px, -18px); }
+  75%       { transform: translate(10px, -8px); }
+}
+
+/* =============================================
+   STAGE BADGE
+   ============================================= */
+
+.tree-stage-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.3px;
+}
+
+/* =============================================
+   INFO PANEL
+   ============================================= */
+
+.tree-info {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Level card */
+.tree-level-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #064e3b, #065f46);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15);
+}
+
+.tree-level-orb {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  background: radial-gradient(circle at 35% 35%, #34d399, #059669 60%, #064e3b);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.3), 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.tree-level-num {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: white;
+  line-height: 1;
+}
+
+.tree-level-lbl {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tree-level-details {
+  flex: 1;
+}
+
+.tree-stage-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #6ee7b7;
+  margin-bottom: 3px;
+}
+
+.tree-stage-desc {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.4;
+}
+
+/* Progress card */
+.tree-progress-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.tree-progress-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.tree-progress-pct {
+  color: #10b981;
+  font-weight: 800;
+}
+
+.tree-progress-bar {
+  background: var(--color-bg);
+  border-radius: 8px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.tree-progress-fill {
+  background: linear-gradient(90deg, #06b6d4, #10b981);
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.6s ease;
+}
+
+.tree-progress-pts {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-top: 6px;
+  text-align: right;
+}
+
+/* Stats row */
+.tree-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.tree-stat-box {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 12px 10px;
+  text-align: center;
+}
+
+.tree-stat-num {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #10b981;
+  margin-bottom: 2px;
+}
+
+.tree-stat-lbl {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Next stage indicator */
+.tree-next-stage {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(16, 185, 129, 0.08));
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.tree-next-label {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 7px;
+}
+
+.tree-next-label strong {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.tree-next-level {
+  color: var(--color-text-secondary);
+  opacity: 0.75;
+  font-size: 0.78rem;
+}
+
+.tree-next-bar {
+  background: var(--color-bg);
+  border-radius: 6px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.tree-next-fill {
+  background: linear-gradient(90deg, #06b6d4, #10b981);
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.6s ease;
+}
+
+/* =============================================
+   GROWTH JOURNEY
+   ============================================= */
+
+.tree-journey {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.tree-journey h2 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.journey-scroll {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  gap: 0;
+  padding: 10px 4px 6px;
+  scrollbar-width: none;
+}
+
+.journey-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.journey-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 68px;
+  opacity: 0.45;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.journey-node.done {
+  opacity: 1;
+}
+
+.journey-node.current {
+  opacity: 1;
+}
+
+.journey-dot {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--color-bg);
+  border: 2px solid var(--color-border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  transition: all 0.3s ease;
+}
+
+.journey-node.done .journey-dot {
+  background: linear-gradient(135deg, #065f46, #10b981);
+  border-color: #10b981;
+  color: white;
+  font-size: 0.85rem;
+}
+
+.journey-node.current .journey-dot {
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  border-color: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25);
+  animation: journey-pulse 2s ease-in-out infinite;
+}
+
+@keyframes journey-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25); }
+  50%       { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.12); }
+}
+
+.journey-name {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.journey-node.current .journey-name {
+  color: #10b981;
+}
+
+.journey-level {
+  font-size: 0.62rem;
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+}
+
+.journey-line {
+  flex: 1;
+  min-width: 16px;
+  height: 2px;
+  background: var(--color-border-light);
+  margin-bottom: 28px;
+  flex-shrink: 1;
+}
+
+.journey-line.done {
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+}
+
+/* Journey node — clickable */
+.journey-node {
+  cursor: pointer;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+.journey-node:hover {
+  transform: translateY(-3px);
+  opacity: 1 !important;
+}
+
+/* Selected (being previewed) */
+.journey-node.selected .journey-dot {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border-color: #a855f7;
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.28);
+  animation: none;
+}
+.journey-node.selected .journey-name {
+  color: #c084fc;
+}
+
+/* Locked (future stages) */
+.journey-node.locked {
+  opacity: 0.6;
+  position: relative;
+}
+.journey-lock-icon {
+  font-size: 0.55rem;
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  line-height: 1;
+}
+
+/* Journey header + reset button */
+.tree-journey-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.tree-journey-header h2 {
+  margin: 0;
+}
+.tree-journey-reset {
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 20px;
+  color: #c084fc;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  font-family: 'Inter', sans-serif;
+}
+.tree-journey-reset:hover {
+  background: rgba(168, 85, 247, 0.22);
+}
+
+/* Locked preview overlay on scene card */
+.tree-preview-overlay {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.52);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 14px;
+  padding: 8px 12px;
+  text-align: center;
+}
+.tree-preview-lock {
+  font-size: 1.3rem;
+}
+.tree-preview-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #c084fc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tree-preview-req {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+.tree-preview-tag {
+  font-size: 0.6rem;
+  background: rgba(168, 85, 247, 0.35);
+  border-radius: 8px;
+  padding: 1px 5px;
+  color: #e9d5ff;
+  margin-left: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+
+@media (max-width: 680px) {
+  .tree-main {
+    grid-template-columns: 1fr;
+  }
+
+  .tree-scene-card {
+    min-height: 280px;
+  }
+
+  .tree-stats-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
