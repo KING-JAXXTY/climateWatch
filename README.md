@@ -8,7 +8,7 @@ Live site: [climate-watch-ecru.vercel.app](https://climate-watch-ecru.vercel.app
 
 ## What It Does
 
-### 🟢 Quests
+### Quests
 The core loop of ClimateWatch. Users are given AI-generated eco-friendly tasks tailored to their level (e.g. air-dry clothes, plant a tree, avoid single-use plastic). Each quest has one of three verification types:
 
 - **Photo Required**: The user must upload a photo as proof of completion. Google Gemini analyzes the image and verifies whether the photo actually matches the quest. If it does not align, the quest is rejected with an explanation.
@@ -17,22 +17,22 @@ The core loop of ClimateWatch. Users are given AI-generated eco-friendly tasks t
 
 Completing quests earns points, increases your level, and advances your day streak.
 
-### 🔥 Day Streak
+### Day Streak
 Each day you complete at least one quest, your day streak counter increases. Your streak is visible on your profile and on the leaderboard next to your name.
 
-### 🔵 Community Feed
+### Community Feed
 A real-time social feed where users post updates about their climate actions. Other users can like posts. It works like a community board for sharing eco wins and motivating others.
 
-### 🏆 Rankings
+### Rankings
 A global leaderboard ranking all users by total points earned. Your current rank and streak are displayed. The more quests you complete (and verify with photos), the higher you climb.
 
-### 🌱 Growth Journey (Virtual Tree)
+### Growth Journey (Virtual Tree)
 A visual representation of your environmental progress. Your virtual tree grows and evolves as you level up, making your cumulative climate impact visible and rewarding.
 
-### 🤖 ClimaAi
+### ClimaAi
 An AI chatbot powered by Google Gemini 2.5 Flash. It answers climate-related questions, explains environmental issues, and gives eco advice tailored to the ASEAN region. It is limited to climate topics and responds in plain, simple language.
 
-### 👤 Profile
+### Profile
 Customize your display name and choose an avatar emoji. Your profile shows your current level, total points, global rank, and day streak.
 
 ---
