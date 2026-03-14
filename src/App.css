@@ -1959,12 +1959,17 @@ body {
   gap: 12px;
   font-family: 'Inter', sans-serif;
   outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .about-dev-toggle:focus {
   outline: none;
 }
 .about-dev-toggle:focus-visible {
   outline: none;
+}
+.about-dev-toggle:active {
+  outline: none;
+  box-shadow: none;
 }
 .about-dev-toggle-left {
   display: flex;
