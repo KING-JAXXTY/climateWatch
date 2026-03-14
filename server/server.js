@@ -1296,11 +1296,12 @@ const ASSISTANT_SYSTEM_PROMPT = `You are ClimateGPT, an AI assistant for a clima
 - Suggest eco-friendly alternatives and actions
 - Explain climate impact and CO2 reduction
 - Motivate users to take climate action
-- Keep responses short and conversational (max 2-3 sentences)
+- Always give complete, clear answers — never cut off mid-sentence
+- Keep responses concise but thorough enough to fully answer the question
 - Focus on ASEAN region context when relevant
 - Be friendly, encouraging, and non-judgmental
 
-Always respond in a supportive tone for climate action.`
+Always respond in a supportive tone for climate action. Always finish your sentences completely.`
 
 // POST /api/assistant - Chat with AI assistant (uses PAID API)
 app.post('/api/assistant', verifyToken, async (req, res) => {
@@ -1331,7 +1332,7 @@ app.post('/api/assistant', verifyToken, async (req, res) => {
         ],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 200,
+          maxOutputTokens: 800,
         },
       }),
     })
