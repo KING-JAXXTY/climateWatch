@@ -3031,8 +3031,9 @@ body {
   }
 
   .score-pill .num {
-    font-size: 1rem;
+    font-size: 0.8rem;
     margin-bottom: 1px;
+    letter-spacing: -0.03em;
   }
 
   .score-pill .lbl {
@@ -3261,10 +3262,9 @@ body {
   }
 
   .score-pill .num {
-    font-size: 1rem;
+    font-size: 0.8rem;
+    letter-spacing: -0.03em;
   }
-
-  .stats-row {
     grid-template-columns: 1fr;
     gap: 8px;
   }
