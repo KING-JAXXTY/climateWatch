@@ -517,7 +517,7 @@ function App() {
                   </svg>
                 </div>
                 <div className="ai-panel-text">
-                  <span className="ai-title">Climate Assistant</span>
+                  <span className="ai-title">ClimaAi</span>
                   <span className="ai-subtitle">Ask about ASEAN emissions & climate actions</span>
                 </div>
               </div>
