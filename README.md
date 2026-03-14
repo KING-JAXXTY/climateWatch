@@ -2,18 +2,18 @@
 
 A gamified climate action platform designed to inspire everyday people in the ASEAN region to take real environmental action through quests, a community feed, rankings, and an AI assistant.
 
-Live site: [climate-watch.vercel.app](https://climate-watch.vercel.app)
+Live site: [climate-watch-ecru.vercel.app](https://climate-watch-ecru.vercel.app/)
 
 ---
 
 ## What It Does
 
-- **Quests** — Complete eco-friendly daily challenges (e.g. air-dry clothes, plant a tree, reduce plastic). Submit photo proof for AI verification using Google Gemini.
-- **Community Feed** — Share your climate actions with other users in a real-time chat-style feed with likes.
-- **Rankings** — Leaderboard based on points earned from completing quests.
-- **Growth Journey** — A visual tree that grows as you level up, showing your climate impact over time.
-- **ClimaAi** — An AI chatbot (powered by Google Gemini) that answers climate-related questions and gives eco advice tailored to the ASEAN region.
-- **Profile** — Customize your name and avatar emoji, track your level and points.
+- **Quests**: Complete eco-friendly daily challenges (e.g. air-dry clothes, plant a tree, reduce plastic). Submit photo proof for AI verification using Google Gemini.
+- **Community Feed**: Share your climate actions with other users in a real-time chat-style feed with likes.
+- **Rankings**: Leaderboard based on points earned from completing quests.
+- **Growth Journey**: A visual tree that grows as you level up, showing your climate impact over time.
+- **ClimaAi**: An AI chatbot (powered by Google Gemini) that answers climate-related questions and gives eco advice tailored to the ASEAN region.
+- **Profile**: Customize your name and avatar emoji, track your level and points.
 
 ---
 
