@@ -1958,6 +1958,13 @@ body {
   padding: 0;
   gap: 12px;
   font-family: 'Inter', sans-serif;
+  outline: none;
+}
+.about-dev-toggle:focus {
+  outline: none;
+}
+.about-dev-toggle:focus-visible {
+  outline: none;
 }
 .about-dev-toggle-left {
   display: flex;
