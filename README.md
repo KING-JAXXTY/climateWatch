@@ -1,11 +1,187 @@
-# React + TypeScript + Vite
+# ClimateWatch ASEAN
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A gamified climate action platform designed to inspire everyday people in the ASEAN region to take real environmental action through quests, a community feed, rankings, and an AI assistant.
 
-Currently, two official plugins are available:
+Live site: [climate-watch.vercel.app](https://climate-watch.vercel.app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
+
+## What It Does
+
+- **Quests** — Complete eco-friendly daily challenges (e.g. air-dry clothes, plant a tree, reduce plastic). Submit photo proof for AI verification using Google Gemini.
+- **Community Feed** — Share your climate actions with other users in a real-time chat-style feed with likes.
+- **Rankings** — Leaderboard based on points earned from completing quests.
+- **Growth Journey** — A visual tree that grows as you level up, showing your climate impact over time.
+- **ClimaAi** — An AI chatbot (powered by Google Gemini) that answers climate-related questions and gives eco advice tailored to the ASEAN region.
+- **Profile** — Customize your name and avatar emoji, track your level and points.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, TypeScript, Vite 7 |
+| Backend | Node.js, Express 4 |
+| Database | MongoDB Atlas |
+| AI | Google Gemini 2.5 Flash |
+| Deployment | Vercel (frontend + serverless backend) |
+| Auth | JWT (JSON Web Tokens) + bcryptjs |
+
+---
+
+## Prerequisites
+
+Make sure you have the following installed before running locally:
+
+- [Node.js](https://nodejs.org/) v18 or higher
+- [npm](https://www.npmjs.com/) v9 or higher
+- A [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) account and cluster
+- A [Google Gemini API key](https://ai.google.dev/) (paid tier recommended)
+
+---
+
+## Local Setup
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/KING-JAXXTY/climateWatch.git
+cd climateWatch
+```
+
+### 2. Install frontend dependencies
+
+```bash
+npm install
+```
+
+### 3. Install backend dependencies
+
+```bash
+cd server
+npm install
+cd ..
+```
+
+### 4. Configure environment variables
+
+Create a file at `server/.env` (copy from `server/.env.example`):
+
+```env
+MONGODB_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_random_secret_key
+GEMINI_API_KEY_PAID=your_gemini_api_key
+PORT=5000
+NODE_ENV=development
+```
+
+### 5. Run the app
+
+```bash
+npm run dev
+```
+
+This starts both the frontend (Vite at `http://localhost:5173`) and the backend (Express at `http://localhost:5000`) concurrently.
+
+---
+
+## Project Structure
+
+```
+climateWatch/
+├── src/                    # Frontend React source
+│   ├── App.tsx             # Main app component and all page views
+│   ├── App.css             # Main styles
+│   ├── Auth.tsx            # Login and signup pages
+│   ├── Auth.css
+│   ├── AuthContext.tsx     # Auth state and API calls
+│   ├── VirtualTree.tsx     # Growth Journey tree visualization
+│   ├── VirtualTree.css
+│   ├── passwordValidator.ts
+│   └── main.tsx
+├── server/
+│   ├── server.js           # Express API server (all routes)
+│   ├── .env                # Secrets — NOT committed to git
+│   ├── .env.example        # Template for environment variables
+│   └── package.json
+├── public/
+├── vercel.json             # Vercel deployment config
+├── vite.config.ts
+├── tsconfig.json
+└── package.json
+```
+
+---
+
+## Deployment (Vercel)
+
+The app is deployed on Vercel using:
+- `@vercel/static-build` for the Vite frontend (`dist/`)
+- `@vercel/node` for the Express backend as a serverless function
+
+All `/api/*` requests are routed to `server/server.js` via `vercel.json`.
+
+Set the following environment variables in the Vercel dashboard:
+
+| Key | Value |
+|---|---|
+| `MONGODB_URI` | Your Atlas connection string |
+| `JWT_SECRET` | A strong random secret |
+| `GEMINI_API_KEY_PAID` | Your Gemini API key |
+| `VITE_API_URL` | `/api` |
+
+---
+
+## API Endpoints
+
+| Method | Route | Description | Auth |
+|---|---|---|---|
+| GET | `/api/health` | Health check | No |
+| POST | `/api/auth/signup` | Register new account | No |
+| POST | `/api/auth/login` | Login | No |
+| GET | `/api/user/profile` | Get current user profile | Yes |
+| PUT | `/api/user/profile` | Update name and avatar | Yes |
+| DELETE | `/api/user/account` | Delete account | Yes |
+| POST | `/api/user/forgot-password` | Reset password | No |
+| GET | `/api/quests` | Get user's quests | Yes |
+| POST | `/api/quests` | Create a quest | Yes |
+| PUT | `/api/quests/:id/complete` | Submit quest completion | Yes |
+| DELETE | `/api/quests/:id` | Delete a quest | Yes |
+| POST | `/api/quests/generate` | AI-generate quests | Yes |
+| GET | `/api/feed` | Get community feed | Yes |
+| POST | `/api/feed` | Post to feed | Yes |
+| POST | `/api/feed/:id/like` | Like a post | Yes |
+| GET | `/api/rankings` | Get leaderboard | Yes |
+| POST | `/api/assistant` | Chat with ClimaAi | Yes |
+
+---
+
+## Security
+
+- Passwords are hashed with bcryptjs (cost factor 12)
+- All protected routes require a valid JWT in the `Authorization: Bearer <token>` header
+- Real credentials are stored only in `server/.env` (gitignored) and Vercel environment variables — never in source code
+- MongoDB Atlas is configured with IP access control
+
+---
+
+## The Developers
+
+Built by students of **Mariano Marcos State University, Philippines** as a climate action initiative for the ASEAN region.
+
+| Name | Role |
+|---|---|
+| Andrew Duldulao Caditan | Lead Developer |
+| Camille Ira Dela Cruz | Developer |
+| Hanni Marie Dadia | Developer |
+
+---
+
+## License
+
+This project is for academic and educational purposes.
+
 
 ## React Compiler
 
