@@ -1100,9 +1100,10 @@ body {
 }
 
 .feed-card-body {
-  /* Fixed bubble width — does not shrink/grow with message length */
-  flex: 0 0 50%;
-  width: 50%;
+  /* Bubble width grows with content up to a max */
+  flex: 0 1 auto;
+  width: auto;
+  max-width: 75%;
   min-width: 0;
   padding-bottom: 8px;
 }
@@ -1201,11 +1202,12 @@ body {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 18px 4px 18px 18px;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border: 1px solid rgba(16, 185, 129, 0.15);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  flex: 0 0 50%;
-  width: 50%;
+  flex: 0 1 auto;
+  width: auto;
+  max-width: 75%;
 }
 
 .feed-card-v2.own-message .feed-card-user {
@@ -1253,11 +1255,12 @@ body {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 4px 18px 18px 18px;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border: 1px solid rgba(16, 185, 129, 0.15);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  flex: 0 0 50%;
-  width: 50%;
+  flex: 0 1 auto;
+  width: auto;
+  max-width: 75%;
 }
 
 .feed-points-badge {
