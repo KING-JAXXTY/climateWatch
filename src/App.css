@@ -3265,6 +3265,8 @@ body {
     font-size: 0.8rem;
     letter-spacing: -0.03em;
   }
+
+  .stats-row {
     grid-template-columns: 1fr;
     gap: 8px;
   }
