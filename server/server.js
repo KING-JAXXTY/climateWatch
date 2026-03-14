@@ -318,15 +318,11 @@ let dbConnectPromise = null
 async function connectDB() {
   try {
     const mongoOptions = {
-      minPoolSize: 2,
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
+      minPoolSize: 0,
+      maxPoolSize: 5,
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
-      family: 4,
-      retryWrites: true,
-      w: 'majority',
-      ssl: true,
-      tlsAllowInvalidCertificates: true,
+      connectTimeoutMS: 10000,
     }
     
     const client = new MongoClient(MONGODB_URI, mongoOptions)
