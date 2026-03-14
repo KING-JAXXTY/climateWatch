@@ -313,6 +313,7 @@ function calculateLevel(points) {
 
 // MongoDB Connection
 let db = null
+let dbConnectPromise = null
 
 async function connectDB() {
   try {
@@ -345,10 +346,28 @@ async function connectDB() {
     console.log('✅ Feed TTL index ensured (7 days)')
   } catch (error) {
     console.error('❌ MongoDB connection failed:', error.message)
-    console.error('⚠️  Using mock/fallback mode - some features may not work')
-    // Continue anyway for development
+    dbConnectPromise = null // allow retry on next request
+    throw error
   }
 }
+
+function ensureDB() {
+  if (!dbConnectPromise) {
+    dbConnectPromise = connectDB()
+  }
+  return dbConnectPromise
+}
+
+// Ensure DB is connected before handling any API request
+app.use('/api', async (req, res, next) => {
+  if (req.path === '/health') return next()
+  try {
+    await ensureDB()
+    next()
+  } catch (err) {
+    res.status(503).json({ error: 'Database connection failed. Please try again shortly.' })
+  }
+})
 
 // Auth Middleware
 async function verifyToken(req, res, next) {
@@ -1345,8 +1364,8 @@ app.post('/api/assistant', verifyToken, async (req, res) => {
 
 // ==================== START SERVER ====================
 
-// Connect to DB (shared across serverless invocations when warm)
-connectDB().catch(() => console.log('⚠️  Starting without database connection'))
+// Kick off DB connection eagerly (warm starts reuse the existing connection)
+ensureDB().catch(() => console.log('⚠️  DB connection attempt failed at startup'))
 
 // Local development only
 if (process.env.NODE_ENV !== 'production') {
