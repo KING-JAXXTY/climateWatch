@@ -1354,7 +1354,7 @@ ClimateWatch is a climate action gaming platform where users complete eco-friend
 - AI Assistant (you!): Answers climate questions, gives eco-tips, and helps users understand the platform.
 
 TEAM INFORMATION (only share if asked):
-- Team Name: 
+- Team Name: Vision
 - University: Mariano Marcos State University
 - Lead Developer: Andrew Duldulao Caditan
 - Developers: Camille Ira Dela Cruz, Hanni Marie Dadia
