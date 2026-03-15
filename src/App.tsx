@@ -1004,7 +1004,7 @@ function App() {
                                     ⭐ Photo (+{quest.bonusPoints || 10} Bonus)
                                   </button>
                                   <button
-                                    onClick={() => completeQuest(quest.id)}
+                                    onClick={() => handleHonorSystemComplete(quest.id)}
                                     style={{
                                       flex: 1,
                                       padding: '8px',
@@ -1533,7 +1533,7 @@ function App() {
                 fontSize: '0.75rem',
                 fontWeight: '400'
               }}>
-                Version 123.5
+                Version 123.6
               </div>
 
             </div>
