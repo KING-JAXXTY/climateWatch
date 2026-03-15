@@ -55,27 +55,30 @@ Respond with ONLY valid JSON:
   "reason": "Brief explanation of what you see and why it matches or doesn't match the quest"
 }
 
-CRITICAL GUIDELINES - BE EXTREMELY LENIENT:
-- This is likely a mobile phone photo, quality may be poor - that's OK!
-- Accept blurry, dark, or low-quality images if they show ANYTHING related to the quest
-- Give benefit of the doubt - if there's even a 30% chance it's related, mark verified: true
-- Look for general context, not perfect proof (outdoor = walking, any food = meal, any container = reusable, etc.)
-- Only reject if the image is COMPLETELY OBVIOUSLY wrong (e.g., a cat photo for "Bike 2km")
-- When in doubt, ALWAYS approve (verified: true)
+VERIFICATION GUIDELINES:
+- Be reasonable and fair - understand that mobile photos may be lower quality, but they should still show the relevant activity
+- Accept photos that clearly show evidence of the quest being completed, even if not perfect quality
+- Look for the main subject/action of the quest in the image
+- If the image shows something that could reasonably be the quest activity, verify it
+- If the image is completely unrelated to the quest, reject it
 
-Examples of ACCEPT:
-- Quest "Walk Short Trip" + any outdoor scene, street, sidewalk, park, buildings, nature = verified: true
-- Quest "Unplug Chargers" + any outlet, wall, cable, charger, plug, electrical = verified: true
-- Quest "Reusable Bag" + any bag, shopping scene, groceries, store = verified: true
-- Quest "Bike 2km" + bicycle, street, outdoor activity, helmet, road = verified: true
-- Quest "Plant Tree" + any greenery, plants, soil, outdoor, garden = verified: true
-- Quest "Meatless Meal" + any food plate (unless it clearly shows meat) = verified: true
-- Quest "Compost" + any organic waste, bin, outdoors, garden = verified: true
-- Blurry photo that might be related = verified: true
+Examples of what to ACCEPT:
+- Quest "Walk Short Trip" + photo of outdoors, street, sidewalk, park, walking = verified: true
+- Quest "Unplug Chargers" + photo showing outlet, unplugged cables, charger = verified: true
+- Quest "Reusable Bag" + photo of reusable bag, shopping with bag, cloth bag = verified: true
+- Quest "Bike 2km" + photo showing bicycle, person on bike, bike path = verified: true
+- Quest "Plant Tree" + photo of planting, tree, seedling, garden, soil with plants = verified: true
+- Quest "Meatless Meal" + photo of vegetarian food (pasta, salad, vegetables, rice dishes without visible meat) = verified: true
+- Quest "Compost" + photo of compost bin, organic waste, composting area = verified: true
 
-Examples of REJECT (very rare):
-- Quest "Bike 2km" + clear photo of indoor furniture/bedroom = verified: false
-- Quest "Meatless Meal" + obvious steak/chicken/fish = verified: false`
+Examples of what to REJECT:
+- Quest "Bike 2km" + photo of indoor room, random object, car = verified: false
+- Quest "Meatless Meal" + photo clearly showing steak, chicken, fish = verified: false
+- Quest "Walk Short Trip" + photo of completely unrelated indoor scene = verified: false
+- Quest "Plant Tree" + photo of random indoor items, no plants = verified: false
+- Any quest + photo that has nothing to do with the activity = verified: false
+
+Be fair but not overly lenient. The photo should reasonably show the quest activity.`
 
     console.log('🔍 Verifying quest with Gemini:', questTitle)
     
@@ -98,7 +101,7 @@ Examples of REJECT (very rare):
           ]
         }],
         generationConfig: { 
-          temperature: 0.5,  // Higher temperature = more lenient
+          temperature: 0.4,  // Balanced verification
           maxOutputTokens: 400 
         },
       }),
@@ -816,7 +819,7 @@ app.get('/api/quests', verifyToken, async (req, res) => {
       // Generate 5 unique quests SEQUENTIALLY to ensure uniqueness
       const generatedQuests = []
       let attempts = 0
-      const maxAttempts = 20 // Prevent infinite loop
+      const maxAttempts = 30 // Increased attempts to ensure we get 5 quests
       
       while (generatedQuests.length < 5 && attempts < maxAttempts) {
         attempts++
@@ -828,13 +831,26 @@ app.get('/api/quests', verifyToken, async (req, res) => {
         }
       }
       
+      // If we still don't have 5 quests, allow duplicates to fill the rest
+      if (generatedQuests.length < 5) {
+        console.log(`⚠️ Only generated ${generatedQuests.length} quests, filling remaining with any available quests`)
+        const remainingNeeded = 5 - generatedQuests.length
+        for (let i = 0; i < remainingNeeded && i < 10; i++) {
+          const quest = await createUserQuest(req.userId, location, userLevel, new Set()) // Empty set allows any quest
+          if (quest) {
+            generatedQuests.push(quest)
+            console.log(`✅ Generated fallback quest ${generatedQuests.length}/5: ${quest.title}`)
+          }
+        }
+      }
+      
+      console.log(`✅ Auto-generated ${generatedQuests.length} new daily quests (${attempts} attempts)`)
+      
       // Update user's last quest generation timestamp
       await db.collection('users').updateOne(
         { _id: new ObjectId(req.userId) },
         { $set: { lastQuestGenerationDate: new Date() } }
       )
-      
-      console.log(`✅ Auto-generated ${generatedQuests.length} new daily quests (${attempts} attempts)`)
       
       // Fetch the newly created quests
       quests = await db.collection('quests')
@@ -1358,6 +1374,7 @@ HOW TO RESPOND:
 12. If users ask about the community, encourage them to share their completed quests in the feed and support others by liking posts.
 13. If users ask about rankings, motivate them by highlighting the fun and friendly competition, and that every point counts towards making a difference.
 14. If users ask about the virtual tree, explain how it grows with their impact and encourages them to keep leveling up.
+15. if someone say innappropriate or harmful content, respond firmly that such content is not allowed and goes against the positive and supportive community values of ClimateWatch.
 20. Celebrate user progress and encourage consistency over perfection.`
 
 
