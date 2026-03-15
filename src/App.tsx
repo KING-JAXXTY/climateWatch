@@ -934,7 +934,7 @@ function App() {
                       </div>
                       {/* Photo Upload Section */}
                       {photoVerifyQuestId === quest.id && !quest.completed ? (
-                        <div style={{ padding: '12px', background: '#f8fafc', borderRadius: '8px', marginTop: '8px' }}>
+                        <div style={{ padding: '12px', background: 'rgba(10, 25, 14, 0.92)', borderRadius: '8px', marginTop: '8px', border: '1px solid rgba(52, 211, 153, 0.15)' }}>
                           {selectedPhoto ? (
                             <div>
                               <img 
@@ -1722,7 +1722,7 @@ function App() {
                 fontSize: '0.75rem',
                 fontWeight: '400'
               }}>
-                Version 125.0
+                Version 125.1
               </div>
 
             </div>

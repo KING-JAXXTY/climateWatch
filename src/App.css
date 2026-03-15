@@ -1122,6 +1122,11 @@ body {
   font-weight: 700;
   font-size: 0.88rem;
   color: var(--color-text-primary);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .feed-verified-badge {
@@ -1136,6 +1141,8 @@ body {
   color: var(--color-text-disabled);
   font-weight: 500;
   white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 8px;
 }
 
 .feed-card-action {
