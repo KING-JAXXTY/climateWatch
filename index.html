@@ -5,9 +5,32 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>ClimateWatch ASEAN</title>
+    <style>
+      body {
+        margin: 0;
+        background: linear-gradient(160deg, #0a150d 0%, #0d1f12 35%, #091710 65%, #0b1c0e 100%);
+        min-height: 100vh;
+      }
+      #root-loader {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 48px;
+        height: 48px;
+        border: 4px solid rgba(52, 211, 153, 0.2);
+        border-top-color: #34d399;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <div id="root-loader"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

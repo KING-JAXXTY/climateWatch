@@ -11,3 +11,9 @@ createRoot(document.getElementById('root')!).render(
     </AuthProvider>
   </StrictMode>,
 )
+
+// Remove loading spinner once React has mounted
+setTimeout(() => {
+  const loader = document.getElementById('root-loader')
+  if (loader) loader.style.display = 'none'
+}, 100)
