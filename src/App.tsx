@@ -498,8 +498,8 @@ function App() {
   // Loading state
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#F0F7F4' }}>
-        <div style={{ fontSize: '2rem' }}>Loading...</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'linear-gradient(160deg, #0a150d 0%, #0d1f12 35%, #091710 65%, #0b1c0e 100%)' }}>
+        <div style={{ fontSize: '2rem', color: '#34d399' }}>Loading...</div>
       </div>
     )
   }
@@ -1533,7 +1533,7 @@ function App() {
                 fontSize: '0.75rem',
                 fontWeight: '400'
               }}>
-                Version 124.3
+                Version 124.4
               </div>
 
             </div>
