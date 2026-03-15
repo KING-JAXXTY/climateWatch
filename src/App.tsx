@@ -235,15 +235,13 @@ function App() {
           refreshProfile()
         }, 2000)
       } else {
-        setVerificationMessage(`❌ ${data.error}: ${data.reason || 'Please try again with a clearer photo'}`)
-        // Clear the rejected photo so user can retry with a different image
-        setSelectedPhoto(null)
+        setVerificationMessage(`❌ Rejected: ${data.reason || 'Photo does not match the quest requirements. Please try a different photo.'}`)
+        // Keep the photo visible so user can see what was rejected
       }
     } catch (error) {
       console.error('Complete quest with photo error:', error)
       setVerificationMessage('❌ Error verifying photo. Please try again.')
-      // Clear the photo on error so user can retry
-      setSelectedPhoto(null)
+      // Keep the photo visible on error
     } finally {
       setVerifying(false)
     }
@@ -763,53 +761,100 @@ function App() {
                               />
                               {verificationMessage && (
                                 <div style={{
-                                  padding: '8px 12px',
+                                  padding: '10px 12px',
                                   background: verificationMessage.includes('✅') ? '#d1fae5' : '#fee2e2',
                                   color: verificationMessage.includes('✅') ? '#065f46' : '#991b1b',
                                   borderRadius: '6px',
                                   marginBottom: '12px',
                                   fontSize: '0.85rem',
-                                  fontWeight: '600'
+                                  fontWeight: '600',
+                                  lineHeight: '1.5',
+                                  border: verificationMessage.includes('❌') ? '2px solid #ef4444' : 'none'
                                 }}>
                                   {verificationMessage}
                                 </div>
                               )}
                               <div style={{ display: 'flex', gap: '8px' }}>
-                                <button
-                                  onClick={() => {
-                                    setPhotoVerifyQuestId(null)
-                                    setSelectedPhoto(null)
-                                    setVerificationMessage('')
-                                  }}
-                                  style={{
-                                    flex: 1,
-                                    padding: '10px',
-                                    background: 'rgba(240, 253, 244, 0.08)',
-                                    color: 'rgba(240, 253, 244, 0.65)',
-                                    border: '1px solid rgba(240, 253, 244, 0.12)',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    fontWeight: '600'
-                                  }}
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  onClick={() => completeQuestWithPhoto(quest.id, selectedPhoto)}
-                                  disabled={verifying}
-                                  style={{
-                                    flex: 1,
-                                    padding: '10px',
-                                    background: verifying ? '#cbd5e1' : 'linear-gradient(135deg, #06b6d4, #10b981)',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    cursor: verifying ? 'not-allowed' : 'pointer',
-                                    fontWeight: '700'
-                                  }}
-                                >
-                                  {verifying ? 'Verifying...' : 'Verify & Complete'}
-                                </button>
+                                {verificationMessage.includes('❌') ? (
+                                  // Photo was rejected - show try another photo button
+                                  <>
+                                    <button
+                                      onClick={() => {
+                                        setSelectedPhoto(null)
+                                        setVerificationMessage('')
+                                      }}
+                                      style={{
+                                        flex: 1,
+                                        padding: '10px',
+                                        background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        fontWeight: '700'
+                                      }}
+                                    >
+                                      📷 Try Another Photo
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setPhotoVerifyQuestId(null)
+                                        setSelectedPhoto(null)
+                                        setVerificationMessage('')
+                                      }}
+                                      style={{
+                                        padding: '10px 16px',
+                                        background: 'rgba(240, 253, 244, 0.08)',
+                                        color: 'rgba(240, 253, 244, 0.65)',
+                                        border: '1px solid rgba(240, 253, 244, 0.12)',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        fontWeight: '600'
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </>
+                                ) : (
+                                  // Normal verification flow
+                                  <>
+                                    <button
+                                      onClick={() => {
+                                        setPhotoVerifyQuestId(null)
+                                        setSelectedPhoto(null)
+                                        setVerificationMessage('')
+                                      }}
+                                      style={{
+                                        flex: 1,
+                                        padding: '10px',
+                                        background: 'rgba(240, 253, 244, 0.08)',
+                                        color: 'rgba(240, 253, 244, 0.65)',
+                                        border: '1px solid rgba(240, 253, 244, 0.12)',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        fontWeight: '600'
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      onClick={() => completeQuestWithPhoto(quest.id, selectedPhoto)}
+                                      disabled={verifying}
+                                      style={{
+                                        flex: 1,
+                                        padding: '10px',
+                                        background: verifying ? '#cbd5e1' : 'linear-gradient(135deg, #06b6d4, #10b981)',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '6px',
+                                        cursor: verifying ? 'not-allowed' : 'pointer',
+                                        fontWeight: '700'
+                                      }}
+                                    >
+                                      {verifying ? 'Verifying...' : 'Verify & Complete'}
+                                    </button>
+                                  </>
+                                )}
                               </div>
                             </div>
                           ) : (
@@ -1467,7 +1512,7 @@ function App() {
                 fontSize: '0.75rem',
                 fontWeight: '400'
               }}>
-                Version 123.2
+                Version 123.3
               </div>
 
             </div>
