@@ -796,19 +796,24 @@ app.get('/api/quests', verifyToken, async (req, res) => {
       .sort({ createdAt: -1 })
       .toArray()
     
-    // AUTO-GENERATE DAILY QUESTS: Only if user has NO quests at all AND 24 hours passed since last generation
+    // Count how many quests user already has from today
+    const todaysExisting = quests.filter(q => new Date(q.createdAt) >= twentyFourHoursAgo)
+    const todaysCount = todaysExisting.length
+    const needsMoreQuests = todaysCount < 5
     const shouldGenerateQuests = !lastQuestGeneration || new Date(lastQuestGeneration) < twentyFourHoursAgo
-    const hasQuestsFromToday = quests.some(q => new Date(q.createdAt) >= twentyFourHoursAgo)
-    
-    // Only generate if: (1) No quests at all, OR (2) No quests from today AND 24 hours passed
-    if ((quests.length === 0 || !hasQuestsFromToday) && shouldGenerateQuests) {
-      console.log('🔄 Auto-generating daily quests for user:', req.userId)
+
+    // Generate if: (1) fewer than 5 quests today, OR (2) no quests at all and 24h passed
+    if (needsMoreQuests && (todaysCount === 0 ? shouldGenerateQuests : true)) {
+      const needed = 5 - todaysCount
+      console.log(`🔄 Topping up quests for user: have ${todaysCount}, generating ${needed} more`)
       
       // Delete old quests (more than 24 hours old) before generating new ones
-      await db.collection('quests').deleteMany({
-        userId: new ObjectId(req.userId),
-        createdAt: { $lt: twentyFourHoursAgo }
-      })
+      if (todaysCount === 0) {
+        await db.collection('quests').deleteMany({
+          userId: new ObjectId(req.userId),
+          createdAt: { $lt: twentyFourHoursAgo }
+        })
+      }
       
       // Get existing quest titles to avoid duplicates
       const allUserQuests = await db.collection('quests')
@@ -816,10 +821,13 @@ app.get('/api/quests', verifyToken, async (req, res) => {
         .toArray()
       const existingTitles = new Set(allUserQuests.map(q => q.title))
       
-      // Generate 5 quests IN PARALLEL to avoid Vercel function timeout
-      // Step 1: Generate all quest data simultaneously (no DB writes yet)
+      // Generate only the needed quests IN PARALLEL with a per-call timeout
+      // Wrap each Gemini call with a 6s timeout so a stalled request falls back fast
+      const withTimeout = (promise, ms) =>
+        Promise.race([promise, new Promise(resolve => setTimeout(() => resolve(null), ms))])
+
       const rawResults = await Promise.all(
-        Array.from({ length: 5 }, () => generateQuestWithGemini(location, userLevel))
+        Array.from({ length: needed }, () => withTimeout(generateQuestWithGemini(location, userLevel), 6000))
       )
       
       // Step 2: Fill in any nulls (Gemini failures) with fallback quests
@@ -861,7 +869,7 @@ app.get('/api/quests', verifyToken, async (req, res) => {
       
       // Step 3: Insert all quests into DB at once
       const now = new Date()
-      const questDocs = questDataList.slice(0, 5).map(q => ({
+      const questDocs = questDataList.slice(0, needed).map(q => ({
         userId: new ObjectId(req.userId),
         emoji: q.emoji,
         title: q.title,
@@ -896,7 +904,7 @@ app.get('/api/quests', verifyToken, async (req, res) => {
         })
         .sort({ createdAt: -1 })
         .toArray()
-    } else if (quests.length === 0 && !shouldGenerateQuests) {
+    } else if (todaysCount === 0 && !shouldGenerateQuests) {
       // User deleted all quests but hasn't waited 24 hours
       const msLeft = new Date(lastQuestGeneration).getTime() + 24 * 60 * 60 * 1000 - Date.now()
       const hoursLeft = Math.ceil(msLeft / (60 * 60 * 1000))
