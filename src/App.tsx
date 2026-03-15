@@ -1435,45 +1435,6 @@ function App() {
                 Change Password
               </button>
 
-              {showForgotPassword && (
-                <div className="prof-password-box">
-                  <h3 className="prof-box-title">Change Password</h3>
-                  <div className="prof-edit-form">
-                    <label className="prof-form-label">Email</label>
-                    <input
-                      type="email"
-                      value={forgotPasswordEmail}
-                      onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                      className="prof-form-input"
-                    />
-                    <label className="prof-form-label">New Password</label>
-                    <input
-                      type="password"
-                      value={newPasswordFP}
-                      onChange={(e) => setNewPasswordFP(e.target.value)}
-                      className="prof-form-input"
-                    />
-                    <label className="prof-form-label">Confirm Password</label>
-                    <input
-                      type="password"
-                      value={confirmPasswordFP}
-                      onChange={(e) => setConfirmPasswordFP(e.target.value)}
-                      className="prof-form-input"
-                    />
-                  </div>
-                  {forgotPasswordMessage && (
-                    <p className="prof-success-msg">{forgotPasswordMessage}</p>
-                  )}
-                  <div className="prof-form-row">
-                    <button onClick={handleForgotPassword} className="prof-save-btn">Update Password</button>
-                    <button
-                      onClick={() => { setShowForgotPassword(false); setForgotPasswordMessage(''); setNewPasswordFP(''); setConfirmPasswordFP('') }}
-                      className="prof-cancel-btn"
-                    >Cancel</button>
-                  </div>
-                </div>
-              )}
-
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 className="prof-danger-btn"
@@ -1481,6 +1442,79 @@ function App() {
                 Delete Account
               </button>
 
+              {/* Version Info */}
+              <div style={{
+                textAlign: 'center',
+                marginTop: '32px',
+                paddingTop: '20px',
+                borderTop: '1px solid rgba(52, 211, 153, 0.1)',
+                color: 'rgba(240, 253, 244, 0.25)',
+                fontSize: '0.75rem',
+                fontWeight: '400'
+              }}>
+                Version 123.1
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* CHANGE PASSWORD MODAL — fixed top overlay */}
+        {showForgotPassword && (
+          <div className="delete-confirm-overlay">
+            <div className="delete-confirm-box" style={{ maxWidth: '400px' }}>
+              <div className="delete-confirm-icon" style={{ background: 'rgba(6, 182, 212, 0.15)' }}>🔑</div>
+              <h3 style={{ 
+                fontSize: '1.2rem', 
+                fontWeight: '700', 
+                color: 'rgba(240, 253, 244, 0.95)', 
+                marginBottom: '16px',
+                textAlign: 'center'
+              }}>Change Password</h3>
+              <div className="prof-edit-form">
+                <label className="prof-form-label">Email</label>
+                <input
+                  type="email"
+                  value={forgotPasswordEmail}
+                  onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                  className="prof-form-input"
+                />
+                <label className="prof-form-label">New Password</label>
+                <input
+                  type="password"
+                  value={newPasswordFP}
+                  onChange={(e) => setNewPasswordFP(e.target.value)}
+                  className="prof-form-input"
+                />
+                <label className="prof-form-label">Confirm Password</label>
+                <input
+                  type="password"
+                  value={confirmPasswordFP}
+                  onChange={(e) => setConfirmPasswordFP(e.target.value)}
+                  className="prof-form-input"
+                />
+              </div>
+              {forgotPasswordMessage && (
+                <p className="prof-success-msg" style={{ marginTop: '12px', textAlign: 'center' }}>{forgotPasswordMessage}</p>
+              )}
+              <div className="delete-confirm-actions" style={{ marginTop: '20px' }}>
+                <button onClick={handleForgotPassword} className="prof-save-btn" style={{ flex: 1 }}>
+                  Update Password
+                </button>
+                <button
+                  onClick={() => { 
+                    setShowForgotPassword(false); 
+                    setForgotPasswordMessage(''); 
+                    setNewPasswordFP(''); 
+                    setConfirmPasswordFP('');
+                    setForgotPasswordEmail(user?.email || '');
+                  }}
+                  className="prof-cancel-btn"
+                  style={{ flex: 1 }}
+                >
+                  Back
+                </button>
+              </div>
             </div>
           </div>
         )}
