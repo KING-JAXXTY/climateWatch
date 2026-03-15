@@ -274,7 +274,7 @@ body {
   overflow-y: auto;
   padding-bottom: 100px;
   scroll-behavior: smooth;
-  background: transparent;
+  background: linear-gradient(160deg, #0a150d 0%, #0d1f12 35%, #091710 65%, #0b1c0e 100%);
 }
 
 .scroll-area {
@@ -512,7 +512,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 28px;
-  background: transparent;
+  background: linear-gradient(160deg, #0a150d 0%, #0d1f12 35%, #091710 65%, #0b1c0e 100%);
 }
 
 .section-title {

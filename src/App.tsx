@@ -543,7 +543,7 @@ function App() {
       <div className="scroll-area">
         {/* HOME PAGE */}
         {currentPage === 'home' && (
-          <div style={{ background: 'transparent' }}>
+          <div>
             <div className="greeting">
               <p>Let's make today count for the planet</p>
             </div>
@@ -1244,7 +1244,7 @@ function App() {
 
         {/* RANKINGS PAGE */}
         {currentPage === 'rankings' && (
-          <div style={{ background: 'transparent' }}>
+          <div>
             <div className="topbar" style={{ background: 'transparent', padding: '16px 20px' }}>
               <div className="topbar-title">Rankings</div>
             </div>
@@ -1332,7 +1332,7 @@ function App() {
 
         {/* PROFILE PAGE */}
         {currentPage === 'profile' && (
-          <div style={{ background: 'transparent' }}>
+          <div>
             <div className="profile-hero">
               <div className="profile-pic">{user?.avatar}</div>
               <div className="profile-name">{user?.name}</div>
@@ -1533,7 +1533,7 @@ function App() {
                 fontSize: '0.75rem',
                 fontWeight: '400'
               }}>
-                Version 124.2
+                Version 124.3
               </div>
 
             </div>
