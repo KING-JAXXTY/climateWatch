@@ -193,6 +193,18 @@ function App() {
     }
   }
 
+  const handleHonorSystemComplete = (questId: string) => {
+    const confirmed = window.confirm(
+      '🌱 Honesty Pledge\n\n' +
+      'Did you truly complete this quest?\n\n' +
+      'ClimateWatch works on trust. Your honesty helps build a genuine community committed to real climate action.\n\n' +
+      'Click OK only if you honestly completed this quest.'
+    )
+    if (confirmed) {
+      completeQuest(questId)
+    }
+  }
+
   const completeQuestWithPhoto = async (questId: string, photoBase64: string) => {
     setVerifying(true)
     setVerificationMessage('Verifying your photo...')
@@ -941,7 +953,7 @@ function App() {
                               ) : (
                                 // Honor System - Just complete button
                                 <button
-                                  onClick={() => completeQuest(quest.id)}
+                                  onClick={() => handleHonorSystemComplete(quest.id)}
                                   style={{
                                     flex: 1,
                                     padding: '8px',
