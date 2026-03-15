@@ -774,7 +774,7 @@ function App() {
                                   {verificationMessage}
                                 </div>
                               )}
-                              <div style={{ display: 'flex', gap: '8px' }}>
+                              <div style={{ display: 'flex', gap: '8px', flexDirection: verificationMessage.includes('❌') ? 'column' : 'row' }}>
                                 {verificationMessage.includes('❌') ? (
                                   // Photo was rejected - show try another photo button
                                   <>
@@ -784,14 +784,15 @@ function App() {
                                         setVerificationMessage('')
                                       }}
                                       style={{
-                                        flex: 1,
-                                        padding: '10px',
+                                        width: '100%',
+                                        padding: '12px',
                                         background: 'linear-gradient(135deg, #f59e0b, #f97316)',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '6px',
                                         cursor: 'pointer',
-                                        fontWeight: '700'
+                                        fontWeight: '700',
+                                        fontSize: '1rem'
                                       }}
                                     >
                                       📷 Try Another Photo
@@ -809,7 +810,8 @@ function App() {
                                         border: '1px solid rgba(240, 253, 244, 0.12)',
                                         borderRadius: '6px',
                                         cursor: 'pointer',
-                                        fontWeight: '600'
+                                        fontWeight: '600',
+                                        alignSelf: 'center'
                                       }}
                                     >
                                       Cancel
@@ -1512,7 +1514,7 @@ function App() {
                 fontSize: '0.75rem',
                 fontWeight: '400'
               }}>
-                Version 123.3
+                Version 123.4
               </div>
 
             </div>
