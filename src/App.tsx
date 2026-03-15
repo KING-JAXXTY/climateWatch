@@ -792,10 +792,18 @@ function App() {
                                         borderRadius: '6px',
                                         cursor: 'pointer',
                                         fontWeight: '700',
-                                        fontSize: '1rem'
+                                        fontSize: '1rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '6px'
                                       }}
                                     >
-                                      📷 Try Another Photo
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                        <circle cx="12" cy="13" r="4"></circle>
+                                      </svg>
+                                      Try Another Photo
                                     </button>
                                     <button
                                       onClick={() => {
@@ -870,7 +878,10 @@ function App() {
                                 color: 'rgba(240, 253, 244, 0.45)',
                                 marginBottom: '12px'
                               }}>
-                                <div style={{ fontSize: '2rem', marginBottom: '8px' }}>📷</div>
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '8px', opacity: 0.5 }}>
+                                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                  <circle cx="12" cy="13" r="4"></circle>
+                                </svg>
                                 <div style={{ fontSize: '0.85rem' }}>Take or choose a photo</div>
                               </div>
                               <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
@@ -890,9 +901,17 @@ function App() {
                                     cursor: 'pointer',
                                     textAlign: 'center',
                                     fontWeight: '600',
-                                    fontSize: '0.9rem'
+                                    fontSize: '0.9rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '6px'
                                   }}>
-                                    📷 Take Photo
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                      <circle cx="12" cy="13" r="4"></circle>
+                                    </svg>
+                                    Take Photo
                                   </div>
                                 </label>
                                 <label style={{ flex: 1 }}>
@@ -1514,7 +1533,7 @@ function App() {
                 fontSize: '0.75rem',
                 fontWeight: '400'
               }}>
-                Version 123.4
+                Version 123.5
               </div>
 
             </div>
