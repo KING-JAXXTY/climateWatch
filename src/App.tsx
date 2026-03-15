@@ -1533,7 +1533,7 @@ function App() {
                 fontSize: '0.75rem',
                 fontWeight: '400'
               }}>
-                Version 124.0
+                Version 124.1
               </div>
 
             </div>

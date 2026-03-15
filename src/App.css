@@ -274,6 +274,7 @@ body {
   overflow-y: auto;
   padding-bottom: 100px;
   scroll-behavior: smooth;
+  background: transparent;
 }
 
 .scroll-area {
@@ -511,6 +512,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 28px;
+  background: transparent;
 }
 
 .section-title {
