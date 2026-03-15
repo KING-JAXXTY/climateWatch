@@ -9,9 +9,11 @@ Live site: [climate-watch-ecru.vercel.app](https://climate-watch-ecru.vercel.app
 ## What It Does
 
 ### Quests
-The core loop of ClimateWatch. Users are given AI-generated eco-friendly tasks tailored to their level (e.g. air-dry clothes, plant a tree, avoid single-use plastic). Each quest has one of three verification types:
+The core loop of ClimateWatch. Users receive 5 AI-generated eco-friendly tasks each day, tailored to their level and location (e.g. air-dry clothes, plant a tree, avoid single-use plastic). Quests automatically refresh every 24 hours — if a user opens the app and has fewer than 5 quests for the day, the system tops them up automatically without waiting for the next reset.
 
-- **Photo Required**: The user must upload a photo as proof of completion. Google Gemini analyzes the image and verifies whether the photo actually matches the quest. If it does not align, the quest is rejected with an explanation.
+Each quest has one of three verification types:
+
+- **Photo Required**: The user must upload a photo as proof of completion. Google Gemini 2.5 Flash analyzes the image using AI vision to verify whether the photo genuinely matches the quest activity. If the image does not match (e.g. submitting a random photo), the quest is rejected with a specific explanation of why it failed. Forgery is actively detected and blocked.
 - **Photo Bonus**: The user can complete the quest on the honor system, or optionally submit a photo for AI verification and earn extra bonus points on top of the base reward.
 - **Honor System**: Completed by self-report, no photo needed.
 
