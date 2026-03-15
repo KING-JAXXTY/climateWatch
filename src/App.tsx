@@ -92,6 +92,8 @@ function App() {
   const [profileLocation, setProfileLocation] = useState(user?.location || '')
   const [profileAvatar, setProfileAvatar] = useState(user?.avatar || '🌿')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showHonestyPledge, setShowHonestyPledge] = useState(false)
+  const [honestyQuestId, setHonestyQuestId] = useState<string | null>(null)
 
   // Forgot password
   const [showForgotPassword, setShowForgotPassword] = useState(false)
@@ -194,14 +196,15 @@ function App() {
   }
 
   const handleHonorSystemComplete = (questId: string) => {
-    const confirmed = window.confirm(
-      '🌱 Honesty Pledge\n\n' +
-      'Did you truly complete this quest?\n\n' +
-      'ClimateWatch works on trust. Your honesty helps build a genuine community committed to real climate action.\n\n' +
-      'Click OK only if you honestly completed this quest.'
-    )
-    if (confirmed) {
-      completeQuest(questId)
+    setHonestyQuestId(questId)
+    setShowHonestyPledge(true)
+  }
+
+  const confirmHonestyPledge = () => {
+    if (honestyQuestId) {
+      completeQuest(honestyQuestId)
+      setShowHonestyPledge(false)
+      setHonestyQuestId(null)
     }
   }
 
@@ -1540,6 +1543,38 @@ function App() {
               <div className="delete-confirm-actions">
                 <button onClick={deleteAccount} className="prof-confirm-delete-btn">Yes, Delete</button>
                 <button onClick={() => setShowDeleteConfirm(false)} className="prof-cancel-btn">Cancel</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* HONESTY PLEDGE — fixed top overlay */}
+        {showHonestyPledge && (
+          <div className="delete-confirm-overlay">
+            <div className="delete-confirm-box" style={{ maxWidth: '420px' }}>
+              <div className="delete-confirm-icon" style={{ background: 'rgba(16, 185, 129, 0.15)' }}>🌱</div>
+              <h3 style={{ 
+                fontSize: '1.25rem', 
+                fontWeight: '700', 
+                color: 'rgba(240, 253, 244, 0.95)', 
+                marginBottom: '12px',
+                textAlign: 'center'
+              }}>Honesty Pledge</h3>
+              <p className="delete-confirm-msg" style={{ fontSize: '0.95rem', lineHeight: '1.6' }}>
+                Did you truly complete this quest?
+              </p>
+              <p style={{ 
+                fontSize: '0.85rem', 
+                color: 'rgba(240, 253, 244, 0.65)', 
+                textAlign: 'center',
+                lineHeight: '1.5',
+                marginTop: '12px'
+              }}>
+                ClimateWatch works on trust. Your honesty helps build a genuine community committed to real climate action.
+              </p>
+              <div className="delete-confirm-actions" style={{ marginTop: '20px' }}>
+                <button onClick={confirmHonestyPledge} className="prof-save-btn" style={{ flex: 1 }}>Yes, I Completed It</button>
+                <button onClick={() => { setShowHonestyPledge(false); setHonestyQuestId(null); }} className="prof-cancel-btn" style={{ flex: 1 }}>Cancel</button>
               </div>
             </div>
           </div>
