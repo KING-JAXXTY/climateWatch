@@ -498,8 +498,154 @@ function App() {
   // Loading state
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'linear-gradient(160deg, #0a150d 0%, #0d1f12 35%, #091710 65%, #0b1c0e 100%)' }}>
-        <div style={{ fontSize: '2rem', color: '#34d399' }}>Loading...</div>
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        minHeight: '100vh', 
+        background: 'linear-gradient(160deg, #0a150d 0%, #0d1f12 35%, #091710 65%, #0b1c0e 100%)',
+        gap: '24px'
+      }}>
+        {/* Animated Tree */}
+        <div style={{
+          position: 'relative',
+          width: '120px',
+          height: '120px',
+          animation: 'pulse 2s ease-in-out infinite'
+        }}>
+          {/* Tree trunk */}
+          <div style={{
+            position: 'absolute',
+            bottom: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '16px',
+            height: '40px',
+            background: 'linear-gradient(180deg, #92400e 0%, #78350f 100%)',
+            borderRadius: '4px',
+            animation: 'grow 1.5s ease-out'
+          }} />
+          
+          {/* Tree leaves - layered triangles */}
+          <div style={{
+            position: 'absolute',
+            bottom: '40px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '0',
+            height: '0',
+            borderLeft: '50px solid transparent',
+            borderRight: '50px solid transparent',
+            borderBottom: '70px solid #10b981',
+            animation: 'grow 1.5s ease-out 0.2s backwards',
+            filter: 'drop-shadow(0 4px 12px rgba(16, 185, 129, 0.4))'
+          }} />
+          
+          <div style={{
+            position: 'absolute',
+            bottom: '50px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '0',
+            height: '0',
+            borderLeft: '40px solid transparent',
+            borderRight: '40px solid transparent',
+            borderBottom: '60px solid #34d399',
+            animation: 'grow 1.5s ease-out 0.3s backwards'
+          }} />
+          
+          <div style={{
+            position: 'absolute',
+            bottom: '60px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '0',
+            height: '0',
+            borderLeft: '30px solid transparent',
+            borderRight: '30px solid transparent',
+            borderBottom: '50px solid #6ee7b7',
+            animation: 'grow 1.5s ease-out 0.4s backwards'
+          }} />
+          
+          {/* Sparkles */}
+          <div style={{
+            position: 'absolute',
+            top: '10px',
+            left: '20px',
+            width: '6px',
+            height: '6px',
+            background: '#fbbf24',
+            borderRadius: '50%',
+            animation: 'sparkle 2s ease-in-out infinite',
+            boxShadow: '0 0 10px #fbbf24'
+          }} />
+          
+          <div style={{
+            position: 'absolute',
+            top: '30px',
+            right: '15px',
+            width: '4px',
+            height: '4px',
+            background: '#34d399',
+            borderRadius: '50%',
+            animation: 'sparkle 2s ease-in-out 0.5s infinite',
+            boxShadow: '0 0 8px #34d399'
+          }} />
+        </div>
+        
+        {/* Loading text */}
+        <div style={{ 
+          fontSize: '1.2rem', 
+          fontWeight: '600',
+          color: '#34d399',
+          letterSpacing: '0.05em',
+          animation: 'fadeInOut 2s ease-in-out infinite'
+        }}>
+          Loading Your Climate Journey...
+        </div>
+        
+        <style>{`
+          @keyframes grow {
+            from {
+              transform: translateX(-50%) scaleY(0);
+              opacity: 0;
+            }
+            to {
+              transform: translateX(-50%) scaleY(1);
+              opacity: 1;
+            }
+          }
+          
+          @keyframes pulse {
+            0%, 100% {
+              transform: scale(1);
+            }
+            50% {
+              transform: scale(1.05);
+            }
+          }
+          
+          @keyframes sparkle {
+            0%, 100% {
+              opacity: 0;
+              transform: scale(0.5);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+          
+          @keyframes fadeInOut {
+            0%, 100% {
+              opacity: 0.6;
+            }
+            50% {
+              opacity: 1;
+            }
+          }
+        `}</style>
       </div>
     )
   }
@@ -1533,7 +1679,7 @@ function App() {
                 fontSize: '0.75rem',
                 fontWeight: '400'
               }}>
-                Version 124.6
+                Version 124.7
               </div>
 
             </div>
