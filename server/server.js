@@ -816,35 +816,72 @@ app.get('/api/quests', verifyToken, async (req, res) => {
         .toArray()
       const existingTitles = new Set(allUserQuests.map(q => q.title))
       
-      // Generate 5 unique quests SEQUENTIALLY to ensure uniqueness
-      const generatedQuests = []
-      let attempts = 0
-      const maxAttempts = 30 // Increased attempts to ensure we get 5 quests
+      // Generate 5 quests IN PARALLEL to avoid Vercel function timeout
+      // Step 1: Generate all quest data simultaneously (no DB writes yet)
+      const rawResults = await Promise.all(
+        Array.from({ length: 5 }, () => generateQuestWithGemini(location, userLevel))
+      )
       
-      while (generatedQuests.length < 5 && attempts < maxAttempts) {
-        attempts++
-        const quest = await createUserQuest(req.userId, location, userLevel, existingTitles)
-        if (quest) {
-          generatedQuests.push(quest)
-          existingTitles.add(quest.title) // Add to set immediately to avoid duplicates
-          console.log(`✅ Generated quest ${generatedQuests.length}/5: ${quest.title}`)
+      // Step 2: Fill in any nulls (Gemini failures) with fallback quests
+      const fallbackPool = [
+        { emoji: '💡', title: 'Lights Off 3 Hours', description: 'Turn off all lights when not in room for 3+ hours', points: 25, co2Saved: 0.3, difficulty: 'easy', verificationType: 'honor-system' },
+        { emoji: '🔌', title: 'Unplug Chargers', description: 'Unplug phone/laptop chargers when not charging', points: 20, co2Saved: 0.2, difficulty: 'easy', verificationType: 'honor-system' },
+        { emoji: '🌬️', title: 'Fan Over AC', description: 'Use electric fan instead of aircon for 4 hours', points: 40, co2Saved: 1.2, difficulty: 'easy', verificationType: 'honor-system' },
+        { emoji: '🚿', title: 'Short Shower', description: 'Limit shower to 5 minutes (saves hot water energy)', points: 25, co2Saved: 0.6, difficulty: 'easy', verificationType: 'honor-system' },
+        { emoji: '🛍️', title: 'Reusable Bag', description: 'Bring reusable bag when shopping (no plastic)', points: 20, co2Saved: 0.1, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🚶', title: 'Walk Short Trip', description: 'Walk instead of drive for trips under 1km', points: 30, co2Saved: 0.5, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '♻️', title: 'Recycle Bottles', description: 'Collect and recycle 5 plastic bottles', points: 25, co2Saved: 0.3, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🍽️', title: 'Meatless Meal', description: 'Prepare and eat plant-based lunch or dinner', points: 35, co2Saved: 1.5, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '☀️', title: 'Air Dry Clothes', description: 'Hang clothes to dry instead of using dryer', points: 30, co2Saved: 0.7, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '💧', title: 'Reusable Water Bottle', description: 'Use refillable bottle instead of buying plastic', points: 20, co2Saved: 0.15, difficulty: 'easy', verificationType: 'photo-required' },
+      ]
+      
+      // Deduplicate by title and fill to 5
+      const usedTitles = new Set(existingTitles)
+      const questDataList = []
+      for (const q of rawResults) {
+        if (q && !usedTitles.has(q.title)) {
+          usedTitles.add(q.title)
+          questDataList.push(q)
         }
       }
-      
-      // If we still don't have 5 quests, allow duplicates to fill the rest
-      if (generatedQuests.length < 5) {
-        console.log(`⚠️ Only generated ${generatedQuests.length} quests, filling remaining with any available quests`)
-        const remainingNeeded = 5 - generatedQuests.length
-        for (let i = 0; i < remainingNeeded && i < 10; i++) {
-          const quest = await createUserQuest(req.userId, location, userLevel, new Set()) // Empty set allows any quest
-          if (quest) {
-            generatedQuests.push(quest)
-            console.log(`✅ Generated fallback quest ${generatedQuests.length}/5: ${quest.title}`)
-          }
+      // Fill remaining slots with fallbacks
+      for (const fb of fallbackPool) {
+        if (questDataList.length >= 5) break
+        if (!usedTitles.has(fb.title)) {
+          usedTitles.add(fb.title)
+          questDataList.push(fb)
         }
       }
+      // Last resort: allow any fallback if still under 5
+      for (const fb of fallbackPool) {
+        if (questDataList.length >= 5) break
+        questDataList.push(fb)
+      }
       
-      console.log(`✅ Auto-generated ${generatedQuests.length} new daily quests (${attempts} attempts)`)
+      // Step 3: Insert all quests into DB at once
+      const now = new Date()
+      const questDocs = questDataList.slice(0, 5).map(q => ({
+        userId: new ObjectId(req.userId),
+        emoji: q.emoji,
+        title: q.title,
+        description: q.description,
+        points: q.points,
+        co2Saved: q.co2Saved,
+        difficulty: q.difficulty || 'easy',
+        verificationType: q.verificationType || 'honor-system',
+        bonusPoints: q.bonusPoints || 0,
+        completed: false,
+        createdAt: now,
+        completedAt: null,
+      }))
+      
+      if (questDocs.length > 0) {
+        await db.collection('quests').insertMany(questDocs)
+      }
+      const generatedQuests = questDocs
+      
+      console.log(`✅ Auto-generated ${generatedQuests.length} new daily quests (parallel)`)
       
       // Update user's last quest generation timestamp
       await db.collection('users').updateOne(

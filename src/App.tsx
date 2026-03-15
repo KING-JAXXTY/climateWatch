@@ -102,6 +102,49 @@ function App() {
   const [confirmPasswordFP, setConfirmPasswordFP] = useState('')
   const [forgotPasswordMessage, setForgotPasswordMessage] = useState('')
 
+  // Reset all state when user logs out or changes
+  useEffect(() => {
+    if (!user) {
+      // Clear all modal states
+      setShowDeleteConfirm(false)
+      setShowHonestyPledge(false)
+      setShowForgotPassword(false)
+      setShowDevTeam(false)
+      setShowSysInfo(false)
+      setEditingProfile(false)
+      setPhotoVerifyQuestId(null)
+      setSelectedPhoto(null)
+      setVerificationMessage('')
+      setHonestyQuestId(null)
+      
+      // Clear password fields
+      setNewPasswordFP('')
+      setConfirmPasswordFP('')
+      setForgotPasswordMessage('')
+      
+      // Clear quest/feed/chat data
+      setQuests([])
+      setFeedItems([])
+      setRankings([])
+      setNewFeedAction('')
+      setLikedItems(new Set())
+      setChatInput('')
+      
+      // Reset messages to initial state
+      setMessages([
+        {
+          id: '1',
+          text: 'Hi! Ask me anything about climate action and emissions in ASEAN!',
+          sender: 'ai',
+          timestamp: Date.now(),
+        },
+      ])
+      
+      // Reset page to home
+      setCurrentPage('home')
+    }
+  }, [user])
+
   // Fetch data on mount
   useEffect(() => {
     if (isAuthenticated && token) {
@@ -1679,7 +1722,7 @@ function App() {
                 fontSize: '0.75rem',
                 fontWeight: '400'
               }}>
-                Version 124.9
+                Version 125.0
               </div>
 
             </div>
