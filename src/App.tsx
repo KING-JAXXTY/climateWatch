@@ -238,14 +238,69 @@ function App() {
     const file = event.target.files?.[0]
     if (!file) return
     
-    // Convert to base64
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      const base64 = reader.result as string
-      const base64Data = base64.split(',')[1] // Remove data:image/jpeg;base64, prefix
-      setSelectedPhoto(base64Data)
+    try {
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file')
+        return
+      }
+      
+      // Compress and convert image to JPEG for consistent format
+      const compressedBase64 = await compressImage(file)
+      setSelectedPhoto(compressedBase64)
+    } catch (error) {
+      console.error('Error processing image:', error)
+      alert('Failed to process image. Please try another photo.')
     }
-    reader.readAsDataURL(file)
+  }
+
+  // Compress image to reduce size and ensure JPEG format
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const img = new Image()
+        img.onload = () => {
+          // Create canvas to compress image
+          const canvas = document.createElement('canvas')
+          let width = img.width
+          let height = img.height
+          
+          // Resize if too large (max 1920px on longest side)
+          const maxSize = 1920
+          if (width > maxSize || height > maxSize) {
+            if (width > height) {
+              height = (height / width) * maxSize
+              width = maxSize
+            } else {
+              width = (width / height) * maxSize
+              height = maxSize
+            }
+          }
+          
+          canvas.width = width
+          canvas.height = height
+          
+          // Draw and compress
+          const ctx = canvas.getContext('2d')
+          if (!ctx) {
+            reject(new Error('Failed to get canvas context'))
+            return
+          }
+          
+          ctx.drawImage(img, 0, 0, width, height)
+          
+          // Convert to JPEG with 85% quality
+          const base64 = canvas.toDataURL('image/jpeg', 0.85)
+          const base64Data = base64.split(',')[1] // Remove data:image/jpeg;base64, prefix
+          resolve(base64Data)
+        }
+        img.onerror = () => reject(new Error('Failed to load image'))
+        img.src = e.target?.result as string
+      }
+      reader.onerror = () => reject(new Error('Failed to read file'))
+      reader.readAsDataURL(file)
+    })
   }
 
   const deleteQuest = async (questId: string) => {
@@ -775,13 +830,13 @@ function App() {
                                     fontWeight: '600',
                                     fontSize: '0.9rem'
                                   }}>
-                                    Take Photo
+                                    📷 Take Photo
                                   </div>
                                 </label>
                                 <label style={{ flex: 1 }}>
                                   <input
                                     type="file"
-                                    accept="image/*"
+                                    accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
                                     onChange={handlePhotoSelect}
                                     style={{ display: 'none' }}
                                   />
@@ -795,7 +850,7 @@ function App() {
                                     fontWeight: '600',
                                     fontSize: '0.9rem'
                                   }}>
-                                    Choose File
+                                    🖼️ Choose File
                                   </div>
                                 </label>
                               </div>

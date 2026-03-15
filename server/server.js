@@ -55,21 +55,27 @@ Respond with ONLY valid JSON:
   "reason": "Brief explanation of what you see and why it matches or doesn't match the quest"
 }
 
-IMPORTANT GUIDELINES:
-- Be VERY LENIENT and give benefit of the doubt if the image is even somewhat related
-- Accept images that show the general context of the quest, even if not perfect proof
-- If you can see something related to the quest activity, mark as verified: true
-- Only reject if the image is completely unrelated or clearly wrong
-- If image quality is poor but you can see something relevant, still verify as true
+CRITICAL GUIDELINES - BE EXTREMELY LENIENT:
+- This is likely a mobile phone photo, quality may be poor - that's OK!
+- Accept blurry, dark, or low-quality images if they show ANYTHING related to the quest
+- Give benefit of the doubt - if there's even a 30% chance it's related, mark verified: true
+- Look for general context, not perfect proof (outdoor = walking, any food = meal, any container = reusable, etc.)
+- Only reject if the image is COMPLETELY OBVIOUSLY wrong (e.g., a cat photo for "Bike 2km")
+- When in doubt, ALWAYS approve (verified: true)
 
-Examples:
-- Quest "Walk Short Trip" + any outdoor/walking/street scene = verified: true
-- Quest "Unplug Chargers" + any outlet/charger/cable image = verified: true
-- Quest "Reusable Bag" + any bag/shopping/grocery scene = verified: true
-- Quest "Bike 2km" + any bicycle/cycling/street scene = verified: true
-- Quest "Plant Tree" + any plant/garden/dirt/outdoor scene = verified: true
-- Quest "Meatless Meal" + any food that doesn't clearly show meat = verified: true
-- Only clear mismatches like "Bike 2km" + random indoor furniture = verified: false`
+Examples of ACCEPT:
+- Quest "Walk Short Trip" + any outdoor scene, street, sidewalk, park, buildings, nature = verified: true
+- Quest "Unplug Chargers" + any outlet, wall, cable, charger, plug, electrical = verified: true
+- Quest "Reusable Bag" + any bag, shopping scene, groceries, store = verified: true
+- Quest "Bike 2km" + bicycle, street, outdoor activity, helmet, road = verified: true
+- Quest "Plant Tree" + any greenery, plants, soil, outdoor, garden = verified: true
+- Quest "Meatless Meal" + any food plate (unless it clearly shows meat) = verified: true
+- Quest "Compost" + any organic waste, bin, outdoors, garden = verified: true
+- Blurry photo that might be related = verified: true
+
+Examples of REJECT (very rare):
+- Quest "Bike 2km" + clear photo of indoor furniture/bedroom = verified: false
+- Quest "Meatless Meal" + obvious steak/chicken/fish = verified: false`
 
     console.log('🔍 Verifying quest with Gemini:', questTitle)
     
@@ -91,7 +97,10 @@ Examples:
             }
           ]
         }],
-        generationConfig: { temperature: 0.3, maxOutputTokens: 300 },
+        generationConfig: { 
+          temperature: 0.5,  // Higher temperature = more lenient
+          maxOutputTokens: 400 
+        },
       }),
     })
 
