@@ -55,12 +55,21 @@ Respond with ONLY valid JSON:
   "reason": "Brief explanation of what you see and why it matches or doesn't match the quest"
 }
 
-Be lenient and give benefit of the doubt if the image is somewhat related.
+IMPORTANT GUIDELINES:
+- Be VERY LENIENT and give benefit of the doubt if the image is even somewhat related
+- Accept images that show the general context of the quest, even if not perfect proof
+- If you can see something related to the quest activity, mark as verified: true
+- Only reject if the image is completely unrelated or clearly wrong
+- If image quality is poor but you can see something relevant, still verify as true
+
 Examples:
-- Quest "Walk Short Trip" + image of person walking/outdoors = verified: true
-- Quest "Unplug Chargers" + image of unplugged outlet/charger = verified: true
-- Quest "Reusable Bag" + image of cloth bag/shopping = verified: true
-- Quest "Bike 2km" + image of random food = verified: false`
+- Quest "Walk Short Trip" + any outdoor/walking/street scene = verified: true
+- Quest "Unplug Chargers" + any outlet/charger/cable image = verified: true
+- Quest "Reusable Bag" + any bag/shopping/grocery scene = verified: true
+- Quest "Bike 2km" + any bicycle/cycling/street scene = verified: true
+- Quest "Plant Tree" + any plant/garden/dirt/outdoor scene = verified: true
+- Quest "Meatless Meal" + any food that doesn't clearly show meat = verified: true
+- Only clear mismatches like "Bike 2km" + random indoor furniture = verified: false`
 
     console.log('🔍 Verifying quest with Gemini:', questTitle)
     
@@ -258,7 +267,7 @@ async function createUserQuest(userId, location, userLevel, existingTitles = new
   let quest = null
   let attempts = 0
   
-  while (!quest && attempts < 5) {
+  while (!quest && attempts < 3) {
     attempts++
     const candidateQuest = await generateQuestWithGemini(location, userLevel)
     
@@ -275,12 +284,19 @@ async function createUserQuest(userId, location, userLevel, existingTitles = new
     const availableFallbacks = fallbackQuests.filter(q => !existingTitles.has(q.title))
     
     if (availableFallbacks.length === 0) {
-      console.log('⚠️ All quests used, allowing duplicates')
+      console.log('⚠️ All quests used, resetting pool')
+      // If all quests are used, just pick a random one (allow repeats)
       quest = fallbackQuests[Math.floor(Math.random() * fallbackQuests.length)]
     } else {
       quest = availableFallbacks[Math.floor(Math.random() * availableFallbacks.length)]
     }
     console.log('📋 Using fallback quest:', quest.title)
+  }
+  
+  // If still no quest (shouldn't happen), return null instead of crashing
+  if (!quest) {
+    console.error('❌ Failed to generate quest after all attempts')
+    return null
   }
 
   // Insert into database only after duplicate check
@@ -788,11 +804,20 @@ app.get('/api/quests', verifyToken, async (req, res) => {
         .toArray()
       const existingTitles = new Set(allUserQuests.map(q => q.title))
       
-      // Generate 5 unique quests IN PARALLEL for speed
-      const questPromises = Array.from({ length: 5 }, () =>
-        createUserQuest(req.userId, location, userLevel, new Set(existingTitles))
-      )
-      const generatedQuests = (await Promise.all(questPromises)).filter(Boolean)
+      // Generate 5 unique quests SEQUENTIALLY to ensure uniqueness
+      const generatedQuests = []
+      let attempts = 0
+      const maxAttempts = 20 // Prevent infinite loop
+      
+      while (generatedQuests.length < 5 && attempts < maxAttempts) {
+        attempts++
+        const quest = await createUserQuest(req.userId, location, userLevel, existingTitles)
+        if (quest) {
+          generatedQuests.push(quest)
+          existingTitles.add(quest.title) // Add to set immediately to avoid duplicates
+          console.log(`✅ Generated quest ${generatedQuests.length}/5: ${quest.title}`)
+        }
+      }
       
       // Update user's last quest generation timestamp
       await db.collection('users').updateOne(
@@ -800,7 +825,7 @@ app.get('/api/quests', verifyToken, async (req, res) => {
         { $set: { lastQuestGenerationDate: new Date() } }
       )
       
-      console.log(`✅ Auto-generated ${generatedQuests.length} new daily quests`)
+      console.log(`✅ Auto-generated ${generatedQuests.length} new daily quests (${attempts} attempts)`)
       
       // Fetch the newly created quests
       quests = await db.collection('quests')

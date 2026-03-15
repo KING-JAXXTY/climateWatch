@@ -221,10 +221,14 @@ function App() {
         }, 2000)
       } else {
         setVerificationMessage(`❌ ${data.error}: ${data.reason || 'Please try again with a clearer photo'}`)
+        // Clear the rejected photo so user can retry with a different image
+        setSelectedPhoto(null)
       }
     } catch (error) {
       console.error('Complete quest with photo error:', error)
       setVerificationMessage('❌ Error verifying photo. Please try again.')
+      // Clear the photo on error so user can retry
+      setSelectedPhoto(null)
     } finally {
       setVerifying(false)
     }
@@ -820,7 +824,12 @@ function App() {
                               {quest.verificationType === 'photo-required' ? (
                                 // Photo Required - Only photo upload option
                                 <button
-                                  onClick={() => setPhotoVerifyQuestId(quest.id)}
+                                  onClick={() => {
+                                    setPhotoVerifyQuestId(quest.id)
+                                    // Clear any previous photo/message when opening new quest
+                                    setSelectedPhoto(null)
+                                    setVerificationMessage('')
+                                  }}
                                   style={{
                                     flex: 1,
                                     padding: '8px',
@@ -838,7 +847,12 @@ function App() {
                                 // Photo Bonus - Both options
                                 <>
                                   <button
-                                    onClick={() => setPhotoVerifyQuestId(quest.id)}
+                                    onClick={() => {
+                                      setPhotoVerifyQuestId(quest.id)
+                                      // Clear any previous photo/message when opening new quest
+                                      setSelectedPhoto(null)
+                                      setVerificationMessage('')
+                                    }}
                                     style={{
                                       flex: 1,
                                       padding: '8px',
