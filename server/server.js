@@ -844,7 +844,7 @@ app.get('/api/quests', verifyToken, async (req, res) => {
         { emoji: '💧', title: 'Reusable Water Bottle', description: 'Use refillable bottle instead of buying plastic', points: 20, co2Saved: 0.15, difficulty: 'easy', verificationType: 'photo-required' },
       ]
       
-      // Deduplicate by title and fill to 5
+      // Deduplicate by title and fill to needed count
       const usedTitles = new Set(existingTitles)
       const questDataList = []
       for (const q of rawResults) {
@@ -853,23 +853,33 @@ app.get('/api/quests', verifyToken, async (req, res) => {
           questDataList.push(q)
         }
       }
-      // Fill remaining slots with fallbacks
+      // Fill remaining slots with fallbacks (unique ones first)
       for (const fb of fallbackPool) {
-        if (questDataList.length >= 5) break
+        if (questDataList.length >= needed) break
         if (!usedTitles.has(fb.title)) {
           usedTitles.add(fb.title)
           questDataList.push(fb)
         }
       }
-      // Last resort: allow any fallback if still under 5
+      // Last resort: if still under needed, allow any fallback not already in this batch
+      const batchTitles = new Set(questDataList.map(q => q.title))
       for (const fb of fallbackPool) {
-        if (questDataList.length >= 5) break
-        questDataList.push(fb)
+        if (questDataList.length >= needed) break
+        if (!batchTitles.has(fb.title)) {
+          batchTitles.add(fb.title)
+          questDataList.push(fb)
+        }
       }
       
-      // Step 3: Insert all quests into DB at once
+      // Step 3: Final count check to guard against race conditions
+      // (two simultaneous requests could both have entered this block)
+      const finalCount = await db.collection('quests').countDocuments({
+        userId: new ObjectId(req.userId),
+        createdAt: { $gte: twentyFourHoursAgo }
+      })
+      const actualNeeded = Math.max(0, 5 - finalCount)
       const now = new Date()
-      const questDocs = questDataList.slice(0, needed).map(q => ({
+      const questDocs = questDataList.slice(0, actualNeeded).map(q => ({
         userId: new ObjectId(req.userId),
         emoji: q.emoji,
         title: q.title,
