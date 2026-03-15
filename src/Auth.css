@@ -258,6 +258,22 @@
   padding-right: 48px !important;
 }
 
+/* Hide browser's built-in password reveal button */
+.password-input-wrapper input::-ms-reveal,
+.password-input-wrapper input::-ms-clear {
+  display: none;
+}
+
+.password-input-wrapper input::-webkit-credentials-auto-fill-button,
+.password-input-wrapper input::-webkit-contacts-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+  height: 0;
+  width: 0;
+  margin: 0;
+}
+
 /* Password toggle button */
 .password-toggle-btn {
   position: absolute;
