@@ -110,15 +110,15 @@ Be fair but not overly lenient. The photo should reasonably show the quest activ
     if (!response.ok) {
       const errorText = await response.text()
       console.log('Gemini API error:', response.status, errorText)
-      return { verified: true, confidence: 'auto-approved', reason: 'API error, giving benefit of doubt' }
+      return { verified: false, confidence: 'error', reason: 'Verification service is temporarily unavailable. Please try again in a moment.' }
     }
 
     const data = await response.json()
     const resultText = data?.candidates?.[0]?.content?.parts?.[0]?.text
 
     if (!resultText) {
-      console.log('No verification result from Gemini - Auto-approving')
-      return { verified: true, confidence: 'auto-approved', reason: 'No API response' }
+      console.log('No verification result from Gemini - Rejecting')
+      return { verified: false, confidence: 'error', reason: 'Verification service returned no result. Please try again.' }
     }
 
     console.log('Raw Gemini response:', resultText)
@@ -147,8 +147,8 @@ Be fair but not overly lenient. The photo should reasonably show the quest activ
     console.log('Gemini verification:', result)
     return result
   } catch (error) {
-    console.error('Gemini verification error:', error.message, '- Auto-approving')
-    return { verified: true, confidence: 'auto-approved', reason: 'Verification error, giving benefit of doubt' }
+    console.error('Gemini verification error:', error.message, '- Rejecting')
+    return { verified: false, confidence: 'error', reason: 'Verification service encountered an error. Please try again.' }
   }
 }
 
