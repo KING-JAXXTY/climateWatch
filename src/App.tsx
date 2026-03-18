@@ -737,29 +737,6 @@ function App() {
               <p>Let's make today count for the planet</p>
             </div>
 
-            <div className="score-row">
-              <div className="score-pill" style={{ animationDelay: '0.1s' }}>
-                <div className="num">{user?.points || 0}</div>
-                <div className="lbl">Eco Points</div>
-              </div>
-              <div className="score-pill" style={{ animationDelay: '0.2s' }}>
-                <div className="num">{user?.dayStreak || 0}</div>
-                <div className="lbl">Day Streak</div>
-              </div>
-              <div className="score-pill" style={{ animationDelay: '0.3s' }}>
-                <div className="num">{(user?.points || 0) > 0 ? `#${user?.rank || '-'}` : 'Unranked'}</div>
-                <div className="lbl">ASEAN Rank</div>
-              </div>
-              <div className="score-pill" style={{ animationDelay: '0.4s' }}>
-                <div className="num">{totalCO2.toFixed(1)}</div>
-                <div className="lbl">kg CO₂ Today</div>
-              </div>
-              <div className="score-pill" style={{ animationDelay: '0.5s' }}>
-                <div className="num">{completedQuests}</div>
-                <div className="lbl">Quests Done</div>
-              </div>
-            </div>
-
             {/* AI ASSISTANT PANEL */}
             <div className="ai-panel">
               <div className="ai-panel-label">
@@ -882,6 +859,29 @@ function App() {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                   )}
                 </button>
+              </div>
+            </div>
+
+            <div className="score-row">
+              <div className="score-pill" style={{ animationDelay: '0.1s' }}>
+                <div className="num">{user?.points || 0}</div>
+                <div className="lbl">Eco Points</div>
+              </div>
+              <div className="score-pill" style={{ animationDelay: '0.2s' }}>
+                <div className="num">{user?.dayStreak || 0}</div>
+                <div className="lbl">Day Streak</div>
+              </div>
+              <div className="score-pill" style={{ animationDelay: '0.3s' }}>
+                <div className="num">{(user?.points || 0) > 0 ? `#${user?.rank || '-'}` : 'Unranked'}</div>
+                <div className="lbl">ASEAN Rank</div>
+              </div>
+              <div className="score-pill" style={{ animationDelay: '0.4s' }}>
+                <div className="num">{totalCO2.toFixed(1)}</div>
+                <div className="lbl">kg CO₂ Today</div>
+              </div>
+              <div className="score-pill" style={{ animationDelay: '0.5s' }}>
+                <div className="num">{completedQuests}</div>
+                <div className="lbl">Quests Done</div>
               </div>
             </div>
 
