@@ -307,6 +307,9 @@ function App() {
     } catch (error) {
       console.error('Error processing image:', error)
       alert('Failed to process image. Please try another photo.')
+    } finally {
+      // Reset input value so the same photo can be re-selected if needed
+      event.target.value = ''
     }
   }
 
