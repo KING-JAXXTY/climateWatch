@@ -44,7 +44,7 @@ Customize your display name and choose an avatar emoji. Your profile shows your 
 | Language | Used For |
 |---|---|
 | TypeScript | All frontend source code (components, types, logic) |
-| JavaScript | Backend server and scripts (`server.js`, `seed-account.js`) |
+| JavaScript | Backend server (`server.js`) |
 | CSS | All styling (no CSS framework, fully custom) |
 | HTML | App entry point (`index.html`) |
 
@@ -182,18 +182,18 @@ Set the following environment variables in the Vercel dashboard:
 | POST | `/api/quests` | Create a quest | Yes |
 | PUT | `/api/quests/:id/complete` | Submit quest completion | Yes |
 | DELETE | `/api/quests/:id` | Delete a quest | Yes |
-| POST | `/api/quests/generate` | AI-generate quests | Yes |
-| GET | `/api/feed` | Get community feed | Yes |
+| POST | `/api/generate-quests` | AI-generate quests | Yes |
+| GET | `/api/feed` | Get community feed | No |
 | POST | `/api/feed` | Post to feed | Yes |
 | POST | `/api/feed/:id/like` | Like a post | Yes |
-| GET | `/api/rankings` | Get leaderboard | Yes |
+| GET | `/api/rankings` | Get leaderboard | No |
 | POST | `/api/assistant` | Chat with ClimaAi | Yes |
 
 ---
 
 ## Security
 
-- Passwords are hashed with bcryptjs (cost factor 12)
+- Passwords are hashed with bcryptjs (cost factor 10)
 - All protected routes require a valid JWT in the `Authorization: Bearer <token>` header
 - Real credentials are stored only in `server/.env` (gitignored) and Vercel environment variables — never in source code
 - MongoDB Atlas is configured with IP access control
