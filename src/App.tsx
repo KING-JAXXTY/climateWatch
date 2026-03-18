@@ -326,8 +326,8 @@ function App() {
           let width = img.width
           let height = img.height
           
-          // Resize if too large (max 1920px on longest side)
-          const maxSize = 1920
+          // Resize to max 800px on longest side for fast upload & Gemini processing
+          const maxSize = 800
           if (width > maxSize || height > maxSize) {
             if (width > height) {
               height = (height / width) * maxSize
@@ -350,8 +350,8 @@ function App() {
           
           ctx.drawImage(img, 0, 0, width, height)
           
-          // Convert to JPEG with 85% quality
-          const base64 = canvas.toDataURL('image/jpeg', 0.85)
+          // Convert to JPEG with 75% quality for smaller payload
+          const base64 = canvas.toDataURL('image/jpeg', 0.75)
           const base64Data = base64.split(',')[1] // Remove data:image/jpeg;base64, prefix
           resolve(base64Data)
         }
