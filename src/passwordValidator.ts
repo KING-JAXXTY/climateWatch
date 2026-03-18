@@ -15,11 +15,11 @@ export function validatePassword(password: string): {
   const errors: string[] = []
   let strengthScore = 0
 
-  // Check minimum length
+  // Check length (8–12 characters)
   if (password.length < 8) {
     errors.push('Password must be at least 8 characters')
-  } else if (password.length < 12) {
-    strengthScore += 1
+  } else if (password.length > 12) {
+    errors.push('Password must be no more than 12 characters')
   } else {
     strengthScore += 2
   }

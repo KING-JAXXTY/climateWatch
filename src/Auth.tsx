@@ -189,7 +189,8 @@ export const SignupPage = ({ onSwitchToLogin }: SignupPageProps) => {
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={(e) => setPassword(e.target.value.replace(/\s/g, ''))}
+                onChange={(e) => setPassword(e.target.value.replace(/\s/g, '').slice(0, 12))}
+                maxLength={12}
                 placeholder="••••••••"
                 required
               />

@@ -423,9 +423,11 @@ const COMMON_PASSWORDS = [
 function validatePassword(password) {
   const errors = []
   
-  // Check minimum length
+  // Check length (8–12 characters)
   if (password.length < 8) {
     errors.push('Password must be at least 8 characters')
+  } else if (password.length > 12) {
+    errors.push('Password must be no more than 12 characters')
   }
   
   // Check for uppercase
