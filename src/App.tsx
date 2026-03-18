@@ -90,7 +90,7 @@ function App() {
   const [showSysInfo, setShowSysInfo] = useState(false)
   const [profileName, setProfileName] = useState(user?.name || '')
   const [profileLocation, setProfileLocation] = useState(user?.location || '')
-  const [profileAvatar, setProfileAvatar] = useState(user?.avatar || '🌿')
+  const [profileAvatar, setProfileAvatar] = useState(user?.avatar || '')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showHonestyPledge, setShowHonestyPledge] = useState(false)
   const [honestyQuestId, setHonestyQuestId] = useState<string | null>(null)
@@ -159,7 +159,7 @@ function App() {
     if (user) {
       setProfileName(user.name)
       setProfileLocation(user.location)
-      setProfileAvatar(user.avatar || '🌿')
+      setProfileAvatar(user.avatar || '')
     }
   }, [user])
 
@@ -268,7 +268,7 @@ function App() {
       
       if (response.ok) {
         const bonusMsg = data.bonusPointsEarned ? ` +${data.bonusPointsEarned} bonus points!` : ''
-        setVerificationMessage(`✅ Verified! ${data.verificationReason}${bonusMsg}`)
+        setVerificationMessage(`Verified! ${data.verificationReason}${bonusMsg}`)
         setTimeout(() => {
           setPhotoVerifyQuestId(null)
           setSelectedPhoto(null)
@@ -278,12 +278,12 @@ function App() {
           refreshProfile()
         }, 2000)
       } else {
-        setVerificationMessage(`❌ Rejected: ${data.reason || 'Photo does not match the quest requirements. Please try a different photo.'}`)
+        setVerificationMessage(`Rejected: ${data.reason || 'Photo does not match the quest requirements. Please try a different photo.'}`)
         // Keep the photo visible so user can see what was rejected
       }
     } catch (error) {
       console.error('Complete quest with photo error:', error)
-      setVerificationMessage('❌ Error verifying photo. Please try again.')
+      setVerificationMessage('Error verifying photo. Please try again.')
       // Keep the photo visible on error
     } finally {
       setVerifying(false)
@@ -951,20 +951,20 @@ function App() {
                               {verificationMessage && (
                                 <div style={{
                                   padding: '10px 12px',
-                                  background: verificationMessage.includes('✅') ? '#d1fae5' : '#fee2e2',
-                                  color: verificationMessage.includes('✅') ? '#065f46' : '#991b1b',
+                                  background: verificationMessage.startsWith('Verified') ? '#d1fae5' : '#fee2e2',
+                                  color: verificationMessage.startsWith('Verified') ? '#065f46' : '#991b1b',
                                   borderRadius: '6px',
                                   marginBottom: '12px',
                                   fontSize: '0.85rem',
                                   fontWeight: '600',
                                   lineHeight: '1.5',
-                                  border: verificationMessage.includes('❌') ? '2px solid #ef4444' : 'none'
+                                  border: !verificationMessage.startsWith('Verified') && verificationMessage.length > 0 ? '2px solid #ef4444' : 'none'
                                 }}>
                                   {verificationMessage}
                                 </div>
                               )}
-                              <div style={{ display: 'flex', gap: '8px', flexDirection: verificationMessage.includes('❌') ? 'column' : 'row' }}>
-                                {verificationMessage.includes('❌') ? (
+                              <div style={{ display: 'flex', gap: '8px', flexDirection: !verificationMessage.startsWith('Verified') && verificationMessage.length > 0 ? 'column' : 'row' }}>
+                                {!verificationMessage.startsWith('Verified') && verificationMessage.length > 0 ? (
                                   // Photo was rejected - show try another photo button
                                   <>
                                     <button
@@ -1120,7 +1120,7 @@ function App() {
                                     fontWeight: '600',
                                     fontSize: '0.9rem'
                                   }}>
-                                    🖼️ Choose File
+                                    Choose File
                                   </div>
                                 </label>
                               </div>
@@ -1238,7 +1238,7 @@ function App() {
                                   fontSize: '0.85rem',
                                 }}
                               >
-                                🗑️
+                                Delete
                               </button>
                             </>
                           ) : (
@@ -1299,7 +1299,7 @@ function App() {
             <div className="feed-scroll">
               {feedItems.length === 0 ? (
                 <div className="feed-empty">
-                  <div className="feed-empty-icon">🌍</div>
+                  <div className="feed-empty-icon"></div>
                   <div className="feed-empty-title">No actions yet</div>
                   <div className="feed-empty-sub">Be the first to share a climate action!</div>
                 </div>
@@ -1449,7 +1449,7 @@ function App() {
                         {user.avatar || user.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="lb-my-rank-badge">
-                        {myEntry.rankPosition === 1 ? '🥇' : myEntry.rankPosition === 2 ? '🥈' : myEntry.rankPosition === 3 ? '🥉' : `#${myEntry.rankPosition}`}
+                        {`#${myEntry.rankPosition}`}
                       </div>
                     </div>
                     <div className="lb-my-rank-info">
@@ -1461,7 +1461,7 @@ function App() {
                       <div className="lb-my-rank-pos">#{myEntry.rankPosition}</div>
                       <div className="lb-my-rank-pts">{user.points.toLocaleString()} pts</div>
                       {(user.dayStreak ?? 0) > 0 && (
-                        <div className="lb-my-rank-streak">🔥 {user.dayStreak}d streak</div>
+                        <div className="lb-my-rank-streak">{user.dayStreak}d streak</div>
                       )}
                     </div>
                   </div>
@@ -1472,7 +1472,7 @@ function App() {
 
               {rankings.length === 0 ? (
                 <div className="lb-empty">
-                  <div className="lb-empty-icon">🏆</div>
+                  <div className="lb-empty-icon"></div>
                   <div className="lb-empty-text">No rankings yet</div>
                   <div className="lb-empty-sub">Complete quests to earn points and appear here</div>
                 </div>
@@ -1485,7 +1485,7 @@ function App() {
                       style={{ animationDelay: `${index * 0.06}s` }}
                     >
                       <div className={`lb-rank${index === 0 ? ' gold' : index === 1 ? ' silver' : index === 2 ? ' bronze' : ''}`}>
-                        {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${rank.rankPosition}`}
+                        {`#${rank.rankPosition}`}
                       </div>
                       <div
                         className="feed-avatar"
@@ -1508,7 +1508,7 @@ function App() {
                         <div className="lb-sub">{rank.location}</div>
                       </div>
                       {rank.dayStreak > 0 && (
-                        <div className="lb-streak">🔥{rank.dayStreak}</div>
+                        <div className="lb-streak">{rank.dayStreak}</div>
                       )}
                       <div className="lb-pts">{rank.points.toLocaleString()}<span className="lb-pts-label"> pts</span></div>
                     </div>
@@ -1584,28 +1584,28 @@ function App() {
                         </p>
                         <div className="about-features">
                           <div className="about-feature-item">
-                            <span>🎯</span>
+                            <span></span>
                             <div>
                               <div className="about-feature-title">Daily Eco Quests</div>
                               <div className="about-feature-sub">AI-generated tasks tailored to your location and level</div>
                             </div>
                           </div>
                           <div className="about-feature-item">
-                            <span>🌱</span>
+                            <span></span>
                             <div>
                               <div className="about-feature-title">Virtual Tree & Carbon Tracker</div>
                               <div className="about-feature-sub">See your real environmental impact grow over time</div>
                             </div>
                           </div>
                           <div className="about-feature-item">
-                            <span>🏆</span>
+                            <span></span>
                             <div>
                               <div className="about-feature-title">Global Leaderboard</div>
                               <div className="about-feature-sub">Compete and inspire others across the ASEAN region</div>
                             </div>
                           </div>
                           <div className="about-feature-item">
-                            <span>🤝</span>
+                            <span></span>
                             <div>
                               <div className="about-feature-title">Community Feed</div>
                               <div className="about-feature-sub">Share your actions and motivate your community</div>

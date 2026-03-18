@@ -45,9 +45,11 @@ export function validatePassword(password: string): {
     strengthScore += 1
   }
 
-  // Check for special characters (NOT allowed)
-  if (/[^A-Za-z0-9]/.test(password)) {
-    errors.push('No special characters or spaces allowed')
+  // Check for special characters (REQUIRED)
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    errors.push('Must include at least one special character (e.g. !@#$%)')
+  } else {
+    strengthScore += 1
   }
 
   // Check against common passwords
@@ -55,13 +57,11 @@ export function validatePassword(password: string): {
     errors.push('Password too common or contains common sequences')
   }
 
-  // Determine strength
+  // Determine strength based on score (independent of errors)
   let strength: 'weak' | 'fair' | 'good' | 'strong' = 'weak'
-  if (errors.length === 0) {
-    if (strengthScore >= 5) strength = 'strong'
-    else if (strengthScore >= 4) strength = 'good'
-    else if (strengthScore >= 2) strength = 'fair'
-  }
+  if (strengthScore >= 5) strength = 'strong'
+  else if (strengthScore >= 4) strength = 'good'
+  else if (strengthScore >= 2) strength = 'fair'
 
   return {
     isValid: errors.length === 0,

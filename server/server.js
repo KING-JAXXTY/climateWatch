@@ -37,7 +37,7 @@ app.get('/api/health', (req, res) => {
 async function verifyQuestWithGemini(questTitle, questDescription, imageBase64) {
   try {
     if (!GEMINI_API_KEY_PAID) {
-      console.log('⚠️  No Gemini API key, auto-approving quest')
+      console.log('No Gemini API key, auto-approving quest')
       return { verified: true, confidence: 'auto-approved', reason: 'No API key configured' }
     }
 
@@ -80,7 +80,7 @@ Examples of what to REJECT:
 
 Be fair but not overly lenient. The photo should reasonably show the quest activity.`
 
-    console.log('🔍 Verifying quest with Gemini:', questTitle)
+    console.log('Verifying quest with Gemini:', questTitle)
     
     const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
       method: 'POST',
@@ -109,7 +109,7 @@ Be fair but not overly lenient. The photo should reasonably show the quest activ
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.log('⚠️  Gemini API error:', response.status, errorText)
+      console.log('Gemini API error:', response.status, errorText)
       return { verified: true, confidence: 'auto-approved', reason: 'API error, giving benefit of doubt' }
     }
 
@@ -117,11 +117,11 @@ Be fair but not overly lenient. The photo should reasonably show the quest activ
     const resultText = data?.candidates?.[0]?.content?.parts?.[0]?.text
 
     if (!resultText) {
-      console.log('⚠️  No verification result from Gemini - Auto-approving')
+      console.log('No verification result from Gemini - Auto-approving')
       return { verified: true, confidence: 'auto-approved', reason: 'No API response' }
     }
 
-    console.log('📄 Raw Gemini response:', resultText)
+    console.log('Raw Gemini response:', resultText)
 
     // Parse JSON from response - handle markdown code blocks
     let jsonStr = resultText.trim()
@@ -142,12 +142,12 @@ Be fair but not overly lenient. The photo should reasonably show the quest activ
       }
     }
 
-    console.log('🔍 Parsed JSON string:', jsonStr)
+    console.log('Parsed JSON string:', jsonStr)
     const result = JSON.parse(jsonStr)
-    console.log('✨ Gemini verification:', result)
+    console.log('Gemini verification:', result)
     return result
   } catch (error) {
-    console.error('⚠️  Gemini verification error:', error.message, '- Auto-approving')
+    console.error('Gemini verification error:', error.message, '- Auto-approving')
     return { verified: true, confidence: 'auto-approved', reason: 'Verification error, giving benefit of doubt' }
   }
 }
@@ -156,7 +156,7 @@ Be fair but not overly lenient. The photo should reasonably show the quest activ
 async function generateQuestWithGemini(location, userLevel) {
   try {
     if (!GEMINI_API_KEY_PAID) {
-      console.log('⚠️  No paid Gemini API key, using fallback quest')
+      console.log('No paid Gemini API key, using fallback quest')
       return null
     }
 
@@ -198,9 +198,9 @@ Important:
 
     if (!response.ok) {
       if (response.status === 429) {
-        console.log('⏸️  Gemini API rate limit reached, using fallback quests')
+        console.log('Gemini API rate limit reached, using fallback quests')
       } else {
-        console.log('⚠️  Gemini API error:', response.status)
+        console.log('Gemini API error:', response.status)
       }
       return null
     }
@@ -209,7 +209,7 @@ Important:
     const questText = data?.candidates?.[0]?.content?.parts?.[0]?.text
 
     if (!questText) {
-      console.log('⚠️  No quest text from Gemini')
+      console.log('No quest text from Gemini')
       return null
     }
 
@@ -231,7 +231,7 @@ Important:
       difficulty,
     }
   } catch (error) {
-    console.error('⚠️  Gemini error:', error.message)
+    console.error('Gemini error:', error.message)
     return null
   }
 }
@@ -285,7 +285,7 @@ async function createUserQuest(userId, location, userLevel, existingTitles = new
     
     if (candidateQuest && !existingTitles.has(candidateQuest.title)) {
       quest = candidateQuest
-      console.log('✨ Gemini generated unique quest:', quest.title)
+      console.log('Gemini generated unique quest:', quest.title)
       break
     }
   }
@@ -296,18 +296,18 @@ async function createUserQuest(userId, location, userLevel, existingTitles = new
     const availableFallbacks = fallbackQuests.filter(q => !existingTitles.has(q.title))
     
     if (availableFallbacks.length === 0) {
-      console.log('⚠️ All quests used, resetting pool')
+      console.log('All quests used, resetting pool')
       // If all quests are used, just pick a random one (allow repeats)
       quest = fallbackQuests[Math.floor(Math.random() * fallbackQuests.length)]
     } else {
       quest = availableFallbacks[Math.floor(Math.random() * availableFallbacks.length)]
     }
-    console.log('📋 Using fallback quest:', quest.title)
+    console.log('Using fallback quest:', quest.title)
   }
   
   // If still no quest (shouldn't happen), return null instead of crashing
   if (!quest) {
-    console.error('❌ Failed to generate quest after all attempts')
+    console.error('Failed to generate quest after all attempts')
     return null
   }
 
@@ -356,7 +356,7 @@ async function connectDB() {
     const client = new MongoClient(MONGODB_URI, mongoOptions)
     await client.connect()
     db = client.db('climatewatch')
-    console.log('✅ Connected to MongoDB')
+    console.log('Connected to MongoDB')
     
     // Create indexes
     await db.collection('users').createIndex({ email: 1 }, { unique: true })
@@ -367,9 +367,9 @@ async function connectDB() {
       { createdAt: 1 },
       { expireAfterSeconds: 604800, name: 'feed_ttl_7d' }
     )
-    console.log('✅ Feed TTL index ensured (7 days)')
+    console.log('Feed TTL index ensured (7 days)')
   } catch (error) {
-    console.error('❌ MongoDB connection failed:', error.message)
+    console.error('MongoDB connection failed:', error.message)
     dbConnectPromise = null // allow retry on next request
     throw error
   }
@@ -443,9 +443,9 @@ function validatePassword(password) {
     errors.push('Must include at least one number (0-9)')
   }
   
-  // Check for special characters (NOT allowed)
-  if (/[^A-Za-z0-9]/.test(password)) {
-    errors.push('No special characters or spaces allowed')
+  // Check for special characters (REQUIRED)
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    errors.push('Must include at least one special character (e.g. !@#$%)')
   }
   
   // Check against common passwords
@@ -805,7 +805,7 @@ app.get('/api/quests', verifyToken, async (req, res) => {
     // Generate if: (1) fewer than 5 quests today, OR (2) no quests at all and 24h passed
     if (needsMoreQuests && (todaysCount === 0 ? shouldGenerateQuests : true)) {
       const needed = 5 - todaysCount
-      console.log(`🔄 Topping up quests for user: have ${todaysCount}, generating ${needed} more`)
+      console.log(`Topping up quests for user: have ${todaysCount}, generating ${needed} more`)
       
       // Delete old quests (more than 24 hours old) before generating new ones
       if (todaysCount === 0) {
@@ -899,7 +899,7 @@ app.get('/api/quests', verifyToken, async (req, res) => {
       }
       const generatedQuests = questDocs
       
-      console.log(`✅ Auto-generated ${generatedQuests.length} new daily quests (parallel)`)
+      console.log(`Auto-generated ${generatedQuests.length} new daily quests (parallel)`)
       
       // Update user's last quest generation timestamp
       await db.collection('users').updateOne(
@@ -1029,7 +1029,7 @@ app.put('/api/quests/:questId/complete', verifyToken, async (req, res) => {
     let bonusPointsEarned = 0
     
     if (imageBase64) {
-      console.log('📸 Verifying photo evidence for quest:', quest.title)
+      console.log('Verifying photo evidence for quest:', quest.title)
       verificationResult = await verifyQuestWithGemini(quest.title, quest.description, imageBase64)
       
       if (!verificationResult.verified) {
@@ -1040,12 +1040,12 @@ app.put('/api/quests/:questId/complete', verifyToken, async (req, res) => {
           verified: false
         })
       }
-      console.log('✅ Photo verified! Confidence:', verificationResult.confidence)
+      console.log('Photo verified! Confidence:', verificationResult.confidence)
       
       // Award bonus points for photo-bonus quests
       if (quest.verificationType === 'photo-bonus' && quest.bonusPoints) {
         bonusPointsEarned = quest.bonusPoints
-        console.log(`⭐ Bonus points awarded: +${bonusPointsEarned}`)
+        console.log(`Bonus points awarded: +${bonusPointsEarned}`)
       }
     }
     
@@ -1111,7 +1111,7 @@ app.put('/api/quests/:questId/complete', verifyToken, async (req, res) => {
         }
       )
       
-      console.log(`✅ Quest completed! +${totalPointsEarned} points (base: ${quest.points}, bonus: ${bonusPointsEarned}). New level: ${newLevel}. Streak: ${newDayStreak} days`)
+      console.log(`Quest completed! +${totalPointsEarned} points (base: ${quest.points}, bonus: ${bonusPointsEarned}). New level: ${newLevel}. Streak: ${newDayStreak} days`)
     }
     
     return res.json({
@@ -1380,7 +1380,7 @@ app.post('/api/generate-quests', verifyToken, async (req, res) => {
     
     // If we couldn't generate 5 unique quests, fill with whatever we have
     if (generatedQuests.length < 5) {
-      console.log(`⚠️ Only generated ${generatedQuests.length} unique quests`)
+      console.log(`Only generated ${generatedQuests.length} unique quests`)
     }
     
     return res.status(201).json({
@@ -1445,7 +1445,7 @@ app.post('/api/assistant', verifyToken, async (req, res) => {
     }
 
     if (!GEMINI_API_KEY_PAID) {
-      console.log('⚠️  No paid Gemini API key, AI assistant unavailable')
+      console.log('No paid Gemini API key, AI assistant unavailable')
       return res.status(503).json({ error: 'AI assistant temporarily unavailable' })
     }
 
@@ -1470,7 +1470,7 @@ app.post('/api/assistant', verifyToken, async (req, res) => {
     })
 
     if (!response.ok) {
-      console.log('⚠️  AI assistant API error:', response.status)
+      console.log('AI assistant API error:', response.status)
       return res.status(500).json({ error: 'AI assistant error' })
     }
 
@@ -1494,13 +1494,13 @@ app.post('/api/assistant', verifyToken, async (req, res) => {
 // ==================== START SERVER ====================
 
 // Kick off DB connection eagerly (warm starts reuse the existing connection)
-ensureDB().catch(() => console.log('⚠️  DB connection attempt failed at startup'))
+ensureDB().catch(() => console.log('DB connection attempt failed at startup'))
 
 // Local development only
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`)
-    console.log(`📡 API endpoints available at http://localhost:${PORT}/api`)
+    console.log(` Server running on http://localhost:${PORT}`)
+    console.log(` API endpoints available at http://localhost:${PORT}/api`)
   })
 }
 
