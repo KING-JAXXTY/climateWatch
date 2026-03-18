@@ -60,6 +60,7 @@ function App() {
   const [questsResetHours, setQuestsResetHours] = useState<number | null>(null)
   const [photoVerifyQuestId, setPhotoVerifyQuestId] = useState<string | null>(null)
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
+  const [photoInputKey, setPhotoInputKey] = useState(0)
   const [verifying, setVerifying] = useState(false)
   const [verificationMessage, setVerificationMessage] = useState('')
   
@@ -308,8 +309,8 @@ function App() {
       console.error('Error processing image:', error)
       alert('Failed to process image. Please try another photo.')
     } finally {
-      // Reset input value so the same photo can be re-selected if needed
-      event.target.value = ''
+      // Force remount of file inputs so they can be used again (works on iOS Safari)
+      setPhotoInputKey(k => k + 1)
     }
   }
 
@@ -1079,6 +1080,7 @@ function App() {
                               <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
                                 <label style={{ flex: 1 }}>
                                   <input
+                                    key={`camera-${photoInputKey}`}
                                     type="file"
                                     accept="image/*"
                                     capture="environment"
@@ -1108,6 +1110,7 @@ function App() {
                                 </label>
                                 <label style={{ flex: 1 }}>
                                   <input
+                                    key={`gallery-${photoInputKey}`}
                                     type="file"
                                     accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
                                     onChange={handlePhotoSelect}
