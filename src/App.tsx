@@ -760,7 +760,7 @@ function App() {
               </div>
             </div>
 
-            {/* AI ASSISTANT PANEL */
+            {/* AI ASSISTANT PANEL */}
             <div className="ai-panel">
               <div className="ai-panel-label">
                 <div className="ai-logo-mark">
