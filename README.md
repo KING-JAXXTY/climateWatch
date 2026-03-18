@@ -204,11 +204,11 @@ Set the following environment variables in the Vercel dashboard:
 
 Built by students of **Mariano Marcos State University, Philippines** as a climate action initiative for the ASEAN region.
 
-| Name | Role |
-|---|---|
-| Andrew Duldulao Caditan | Lead Developer |
-| Camille Ira Dela Cruz | Developer |
-| Hanni Marie Dadia | Developer |
+| Name | Role | Email |
+|---|---|---|
+| Andrew Duldulao Caditan | Lead Developer | andrewcaditan13@gmail.com |
+| Camille Ira Dela Cruz | Developer | delacruzcamilleira@mail.com |
+| Hanni Marie Dadia | Developer | hannidadia@gmail.com |
 
 ---
 
