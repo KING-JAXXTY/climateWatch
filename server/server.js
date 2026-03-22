@@ -851,18 +851,43 @@ app.get('/api/quests', verifyToken, async (req, res) => {
       )
       
       // Step 2: Fill in any nulls (Gemini failures) with fallback quests
+      // Full pool - same 29 quests as createUserQuest, shuffled randomly each time
       const fallbackPool = [
         { emoji: '💡', title: 'Lights Off 3 Hours', description: 'Turn off all lights when not in room for 3+ hours', points: 25, co2Saved: 0.3, difficulty: 'easy', verificationType: 'honor-system' },
         { emoji: '🔌', title: 'Unplug Chargers', description: 'Unplug phone/laptop chargers when not charging', points: 20, co2Saved: 0.2, difficulty: 'easy', verificationType: 'honor-system' },
         { emoji: '🌬️', title: 'Fan Over AC', description: 'Use electric fan instead of aircon for 4 hours', points: 40, co2Saved: 1.2, difficulty: 'easy', verificationType: 'honor-system' },
+        { emoji: '💧', title: 'Cold Water Laundry', description: 'Wash clothes with cold water instead of hot', points: 25, co2Saved: 0.4, difficulty: 'easy', verificationType: 'honor-system' },
+        { emoji: '🥤', title: 'No Plastic Straws', description: 'Refuse plastic straws for all drinks today', points: 15, co2Saved: 0.05, difficulty: 'easy', verificationType: 'honor-system' },
+        { emoji: '💻', title: 'Screen Brightness Down', description: 'Reduce screen brightness by 50% all day', points: 20, co2Saved: 0.2, difficulty: 'easy', verificationType: 'honor-system' },
         { emoji: '🚿', title: 'Short Shower', description: 'Limit shower to 5 minutes (saves hot water energy)', points: 25, co2Saved: 0.6, difficulty: 'easy', verificationType: 'honor-system' },
-        { emoji: '🛍️', title: 'Reusable Bag', description: 'Bring reusable bag when shopping (no plastic)', points: 20, co2Saved: 0.1, difficulty: 'easy', verificationType: 'photo-required' },
         { emoji: '🚶', title: 'Walk Short Trip', description: 'Walk instead of drive for trips under 1km', points: 30, co2Saved: 0.5, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🚴', title: 'Bike 2km Today', description: 'Use bicycle instead of motorbike for one trip', points: 35, co2Saved: 0.8, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🚌', title: 'Take the Jeepney', description: 'Use public transport instead of private car once', points: 35, co2Saved: 1.5, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🛍️', title: 'Reusable Bag', description: 'Bring reusable bag when shopping (no plastic)', points: 20, co2Saved: 0.1, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🌾', title: 'Buy Local Produce', description: 'Get vegetables from local market (no imports)', points: 30, co2Saved: 0.6, difficulty: 'easy', verificationType: 'photo-required' },
         { emoji: '♻️', title: 'Recycle Bottles', description: 'Collect and recycle 5 plastic bottles', points: 25, co2Saved: 0.3, difficulty: 'easy', verificationType: 'photo-required' },
-        { emoji: '🍽️', title: 'Meatless Meal', description: 'Prepare and eat plant-based lunch or dinner', points: 35, co2Saved: 1.5, difficulty: 'easy', verificationType: 'photo-required' },
-        { emoji: '☀️', title: 'Air Dry Clothes', description: 'Hang clothes to dry instead of using dryer', points: 30, co2Saved: 0.7, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🌱', title: 'Plant a Seedling', description: 'Plant herbs, vegetables or flowers in your home', points: 40, co2Saved: 0.8, difficulty: 'easy', verificationType: 'photo-required' },
         { emoji: '💧', title: 'Reusable Water Bottle', description: 'Use refillable bottle instead of buying plastic', points: 20, co2Saved: 0.15, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🍃', title: 'Compost Organic Waste', description: 'Start or add to compost bin with food scraps', points: 35, co2Saved: 0.4, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🧵', title: 'Repair Not Replace', description: 'Fix clothing, bag, or item instead of buying new', points: 40, co2Saved: 1.0, difficulty: 'medium', verificationType: 'photo-required' },
+        { emoji: '🥢', title: 'Metal/Bamboo Straw', description: 'Use reusable straw instead of plastic or paper', points: 15, co2Saved: 0.05, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🚗', title: 'Carpool Today', description: 'Share ride with 2+ people instead of solo driving', points: 45, co2Saved: 1.8, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🚶‍♀️', title: 'Use Stairs', description: 'Take stairs instead of elevator (at least 3 floors)', points: 25, co2Saved: 0.1, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🧹', title: 'Pick Up Litter', description: 'Clean up 10+ pieces of trash in public area', points: 30, co2Saved: 0.2, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🌿', title: 'Start Herb Garden', description: 'Grow basil, mint, or other herbs at home', points: 35, co2Saved: 0.3, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '👕', title: 'Thrift Shop', description: 'Buy second-hand clothing or items', points: 40, co2Saved: 1.2, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🌳', title: 'Tree Planting', description: 'Plant a tree in your community or backyard', points: 50, co2Saved: 2.0, difficulty: 'medium', verificationType: 'photo-required' },
+        { emoji: '🧴', title: 'Eco-Friendly Products', description: 'Buy biodegradable or zero-waste products', points: 30, co2Saved: 0.5, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🍽️', title: 'Meatless Meal', description: 'Prepare and eat plant-based lunch or dinner', points: 35, co2Saved: 1.5, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '📄', title: 'Use Both Sides Paper', description: 'Reuse paper by writing on both sides', points: 15, co2Saved: 0.1, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '☀️', title: 'Air Dry Clothes', description: 'Hang clothes to dry instead of using dryer', points: 30, co2Saved: 0.7, difficulty: 'easy', verificationType: 'photo-required' },
+        { emoji: '🍱', title: 'Pack Lunch', description: 'Bring homemade lunch (avoid food delivery packaging)', points: 30, co2Saved: 0.5, difficulty: 'easy', verificationType: 'photo-bonus', bonusPoints: 10 },
       ]
+      // Shuffle fallback pool so selection is random, not always the same order
+      for (let i = fallbackPool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [fallbackPool[i], fallbackPool[j]] = [fallbackPool[j], fallbackPool[i]]
+      }
       
       // Deduplicate by title and fill to needed count
       const usedTitles = new Set(existingTitles)
@@ -873,7 +898,7 @@ app.get('/api/quests', verifyToken, async (req, res) => {
           questDataList.push(q)
         }
       }
-      // Fill remaining slots with fallbacks (unique ones first)
+      // Fill remaining slots with fallbacks not yet used by this user at all
       for (const fb of fallbackPool) {
         if (questDataList.length >= needed) break
         if (!usedTitles.has(fb.title)) {
@@ -881,13 +906,16 @@ app.get('/api/quests', verifyToken, async (req, res) => {
           questDataList.push(fb)
         }
       }
-      // Last resort: if still under needed, allow any fallback not already in this batch
-      const batchTitles = new Set(questDataList.map(q => q.title))
-      for (const fb of fallbackPool) {
-        if (questDataList.length >= needed) break
-        if (!batchTitles.has(fb.title)) {
-          batchTitles.add(fb.title)
-          questDataList.push(fb)
+      // Absolute last resort: all fallbacks exhausted — pick randomly from pool,
+      // only ensuring no duplicates within the current batch
+      if (questDataList.length < needed) {
+        const batchTitles = new Set(questDataList.map(q => q.title))
+        for (const fb of fallbackPool) {
+          if (questDataList.length >= needed) break
+          if (!batchTitles.has(fb.title)) {
+            batchTitles.add(fb.title)
+            questDataList.push(fb)
+          }
         }
       }
       
@@ -1179,9 +1207,13 @@ app.delete('/api/quests/:questId', verifyToken, async (req, res) => {
     await db.collection('quests').deleteOne({ _id: questId })
 
     // Track deleted quest title so re-generation doesn't produce the same quest immediately
+    // Cap at 20 entries so the pool doesn't get permanently blocked
+    const updatedUser = await db.collection('users').findOne({ _id: new ObjectId(req.userId) })
+    const currentDeleted = updatedUser?.recentlyDeletedTitles || []
+    const cappedDeleted = [...new Set([...currentDeleted, quest.title])].slice(-20)
     await db.collection('users').updateOne(
       { _id: new ObjectId(req.userId) },
-      { $addToSet: { recentlyDeletedTitles: quest.title } }
+      { $set: { recentlyDeletedTitles: cappedDeleted } }
     )
     
     return res.json({ message: 'Quest deleted successfully' })
