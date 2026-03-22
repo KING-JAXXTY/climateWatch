@@ -1,6 +1,6 @@
 # ClimateWatch ASEAN
 
-A gamified climate action platform designed to inspire everyday people in the ASEAN region to take real environmental action through quests, a community feed, rankings, and an AI assistant.
+A gamified climate action platform designed to inspire everyday people to build lasting eco-friendly habits through daily quests, community engagement, competitive rankings, and an AI assistant focused on climate action.
 
 Live site: [climate-watch-ecru.vercel.app](https://climate-watch-ecru.vercel.app/)
 
@@ -9,12 +9,14 @@ Live site: [climate-watch-ecru.vercel.app](https://climate-watch-ecru.vercel.app
 ## What It Does
 
 ### Quests
-The core loop of ClimateWatch. Users receive 5 AI-generated eco-friendly tasks each day, tailored to their level and location (e.g. air-dry clothes, plant a tree, avoid single-use plastic). Quests automatically refresh every 24 hours — if a user opens the app and has fewer than 5 quests for the day, the system tops them up automatically without waiting for the next reset.
+The core loop of ClimateWatch. Users receive 5 AI-generated eco-friendly tasks each day, scaled to their current level and location. Quests automatically refresh every 24 hours. If a user opens the app and has fewer than 5 active quests, the system tops them up immediately without waiting for the next reset.
+
+When a user deletes a quest, the deleted quest is removed from the UI instantly and the system automatically generates a fresh replacement — no manual refresh required. Recently deleted quest titles are tracked per user so the same quest cannot be re-assigned immediately after deletion.
 
 Each quest has one of three verification types:
 
-- **Photo Required**: The user must upload a photo as proof of completion. Google Gemini 2.5 Flash analyzes the image using AI vision to verify whether the photo genuinely matches the quest activity. If the image does not match (e.g. submitting a random photo), the quest is rejected with a specific explanation of why it failed. Forgery is actively detected and blocked.
-- **Photo Bonus**: The user can complete the quest on the honor system, or optionally submit a photo for AI verification and earn extra bonus points on top of the base reward.
+- **Photo Required**: The user must upload a photo as proof. Google Gemini 2.5 Flash analyzes the image using computer vision to confirm the photo genuinely matches the quest activity. Submissions that do not match are rejected with a specific explanation. Forgery is actively detected and blocked.
+- **Photo Bonus**: The user can complete the quest on the honor system, or optionally submit a photo for AI verification to earn extra bonus points on top of the base reward.
 - **Honor System**: Completed by self-report, no photo needed.
 
 Completing quests earns points, increases your level, and advances your day streak.
@@ -35,7 +37,7 @@ A visual representation of your environmental progress. Your virtual tree grows 
 An AI chatbot powered by Google Gemini 2.5 Flash. It answers climate-related questions, explains environmental issues, and gives eco advice tailored to the ASEAN region. It is limited to climate topics and responds in plain, simple language.
 
 ### Profile
-Customize your display name and choose an avatar emoji. Your profile shows your current level, total points, global rank, and day streak.
+Customize your display name, location, and avatar. Location supports countries across ASEAN, East Asia, South Asia, Middle East, Oceania, Europe, the Americas, and Africa. Your profile displays your current level, total points, global rank, and day streak.
 
 ---
 
