@@ -59,6 +59,8 @@ function App() {
   const [quests, setQuests] = useState<Quest[]>([])
   const [questsLoading, setQuestsLoading] = useState(false)
   const [questsResetHours, setQuestsResetHours] = useState<number | null>(null)
+  const [showQuestDeleteConfirm, setShowQuestDeleteConfirm] = useState(false)
+  const [pendingDeleteQuestId, setPendingDeleteQuestId] = useState<string | null>(null)
   const [photoVerifyQuestId, setPhotoVerifyQuestId] = useState<string | null>(null)
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
   const [photoInputKey, setPhotoInputKey] = useState(0)
@@ -109,6 +111,8 @@ function App() {
     if (!user) {
       // Clear all modal states
       setShowDeleteConfirm(false)
+      setShowQuestDeleteConfirm(false)
+      setPendingDeleteQuestId(null)
       setShowHonestyPledge(false)
       setShowForgotPassword(false)
       setShowDevTeam(false)
@@ -367,15 +371,21 @@ function App() {
     })
   }
 
-  const deleteQuest = async (questId: string) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this quest? A new one will be generated to replace it.')
-    
-    if (!confirmDelete) return
-    
+  const deleteQuest = (questId: string) => {
+    setPendingDeleteQuestId(questId)
+    setShowQuestDeleteConfirm(true)
+  }
+
+  const confirmDeleteQuest = async () => {
+    if (!pendingDeleteQuestId) return
+    const questId = pendingDeleteQuestId
+    setShowQuestDeleteConfirm(false)
+    setPendingDeleteQuestId(null)
+
     // Immediately remove from UI and show loading state
     setQuests(prev => prev.filter(q => q.id !== questId))
     setQuestsLoading(true)
-    
+
     try {
       const response = await fetch(`${API_URL}/quests/${questId}`, {
         method: 'DELETE',
@@ -1910,6 +1920,20 @@ function App() {
               <div className="delete-confirm-actions">
                 <button onClick={deleteAccount} className="prof-confirm-delete-btn">Yes, Delete</button>
                 <button onClick={() => setShowDeleteConfirm(false)} className="prof-cancel-btn">Cancel</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* QUEST DELETE CONFIRM — fixed overlay */}
+        {showQuestDeleteConfirm && (
+          <div className="delete-confirm-overlay">
+            <div className="delete-confirm-box">
+              <div className="delete-confirm-icon" style={{ background: 'rgba(239, 68, 68, 0.12)' }}>🗑️</div>
+              <p className="delete-confirm-msg">Are you sure you want to delete this quest? <strong>A new one will be generated</strong> to replace it.</p>
+              <div className="delete-confirm-actions">
+                <button onClick={confirmDeleteQuest} className="prof-confirm-delete-btn">Yes, Delete</button>
+                <button onClick={() => { setShowQuestDeleteConfirm(false); setPendingDeleteQuestId(null) }} className="prof-cancel-btn">Cancel</button>
               </div>
             </div>
           </div>
