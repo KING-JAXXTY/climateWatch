@@ -368,6 +368,20 @@ async function connectDB() {
       { expireAfterSeconds: 604800, name: 'feed_ttl_7d' }
     )
     console.log('Feed TTL index ensured (7 days)')
+
+    // Migration: convert old city-based locations to country-only
+    const locationMigrations = [
+      ['Manila, Philippines', 'Philippines'],
+      ['Bangkok, Thailand', 'Thailand'],
+      ['Ho Chi Minh City, Vietnam', 'Vietnam'],
+      ['Kuala Lumpur, Malaysia', 'Malaysia'],
+      ['Jakarta, Indonesia', 'Indonesia'],
+      ['Yangon, Myanmar', 'Myanmar'],
+    ]
+    for (const [oldLoc, newLoc] of locationMigrations) {
+      await db.collection('users').updateMany({ location: oldLoc }, { $set: { location: newLoc } })
+    }
+    console.log('Location migration applied (city → country)')
   } catch (error) {
     console.error('MongoDB connection failed:', error.message)
     dbConnectPromise = null // allow retry on next request
@@ -506,7 +520,7 @@ app.post('/api/auth/signup', async (req, res) => {
       email,
       password: hashedPassword,
       name,
-      location: location || 'Manila, Philippines',
+      location: location || 'Philippines',
       avatar: avatar || name.substring(0, 2).toUpperCase(),
       points: 0,
       rank: 0,
@@ -517,7 +531,7 @@ app.post('/api/auth/signup', async (req, res) => {
     })
     
     // Generate first quest for new user
-    const firstQuest = await createUserQuest(result.insertedId.toString(), location || 'Manila, Philippines', 1)
+    const firstQuest = await createUserQuest(result.insertedId.toString(), location || 'Philippines', 1)
     
     const token = jwt.sign({ userId: result.insertedId.toString(), email }, JWT_SECRET, { expiresIn: '7d' })
     
@@ -528,7 +542,7 @@ app.post('/api/auth/signup', async (req, res) => {
         id: result.insertedId.toString(),
         email,
         name,
-        location: location || 'Manila, Philippines',
+        location: location || 'Philippines',
         avatar: avatar || name.substring(0, 2).toUpperCase(),
         points: 0,
         rank: 0,
@@ -784,7 +798,7 @@ app.get('/api/quests', verifyToken, async (req, res) => {
 
     const user = await db.collection('users').findOne({ _id: new ObjectId(req.userId) })
     const userLevel = user?.level || 1
-    const location = user?.location || 'Manila, Philippines'
+    const location = user?.location || 'Philippines'
 
     // Check when quests were last generated for this user
     const lastQuestGeneration = user?.lastQuestGenerationDate
@@ -817,11 +831,15 @@ app.get('/api/quests', verifyToken, async (req, res) => {
         })
       }
       
-      // Get existing quest titles to avoid duplicates
+      // Get existing quest titles to avoid duplicates (including recently deleted ones
+      // so the same quest that was just deleted isn't immediately re-generated)
       const allUserQuests = await db.collection('quests')
         .find({ userId: new ObjectId(req.userId) })
         .toArray()
-      const existingTitles = new Set(allUserQuests.map(q => q.title))
+      const existingTitles = new Set([
+        ...allUserQuests.map(q => q.title),
+        ...(user?.recentlyDeletedTitles || []),
+      ])
       
       // Generate only the needed quests IN PARALLEL with a per-call timeout
       // Wrap each Gemini call with a 6s timeout so a stalled request falls back fast
@@ -903,11 +921,15 @@ app.get('/api/quests', verifyToken, async (req, res) => {
       
       console.log(`Auto-generated ${generatedQuests.length} new daily quests (parallel)`)
       
-      // Update user's last quest generation timestamp
-      await db.collection('users').updateOne(
-        { _id: new ObjectId(req.userId) },
-        { $set: { lastQuestGenerationDate: new Date() } }
-      )
+      // Only update lastQuestGenerationDate on a full daily reset (todaysCount === 0),
+      // NOT on partial top-ups triggered by deletions. This prevents the 24h clock
+      // from being pushed forward every time a user deletes a quest.
+      if (todaysCount === 0) {
+        await db.collection('users').updateOne(
+          { _id: new ObjectId(req.userId) },
+          { $set: { lastQuestGenerationDate: new Date(), recentlyDeletedTitles: [] } }
+        )
+      }
       
       // Fetch the newly created quests
       quests = await db.collection('quests')
@@ -1155,6 +1177,12 @@ app.delete('/api/quests/:questId', verifyToken, async (req, res) => {
     }
     
     await db.collection('quests').deleteOne({ _id: questId })
+
+    // Track deleted quest title so re-generation doesn't produce the same quest immediately
+    await db.collection('users').updateOne(
+      { _id: new ObjectId(req.userId) },
+      { $addToSet: { recentlyDeletedTitles: quest.title } }
+    )
     
     return res.json({ message: 'Quest deleted successfully' })
   } catch (error) {
@@ -1333,7 +1361,7 @@ app.get('/api/rankings', async (req, res) => {
 // GENERATE ASEAN QUESTS (connected to emissions)
 app.post('/api/generate-quests', verifyToken, async (req, res) => {
   try {
-    const { location = 'Manila, Philippines' } = req.body
+    const { location = 'Philippines' } = req.body
     
     // Check if user already has quests from the last 24 hours
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)

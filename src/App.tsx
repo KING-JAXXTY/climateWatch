@@ -380,6 +380,8 @@ function App() {
       })
       if (response.ok) {
         console.log('Quest deleted successfully')
+        // Optimistically remove from UI immediately so the user sees instant feedback
+        setQuests(prev => prev.filter(q => q.id !== questId))
         fetchQuests()
       } else {
         const error = await response.text()
@@ -1688,13 +1690,88 @@ function App() {
                       onChange={(e) => setProfileLocation(e.target.value)}
                       className="prof-form-input"
                     >
-                      <option>Manila, Philippines</option>
-                      <option>Bangkok, Thailand</option>
-                      <option>Singapore</option>
-                      <option>Ho Chi Minh City, Vietnam</option>
-                      <option>Kuala Lumpur, Malaysia</option>
-                      <option>Jakarta, Indonesia</option>
-                      <option>Yangon, Myanmar</option>
+                      <optgroup label="ASEAN">
+                        <option>Philippines</option>
+                        <option>Thailand</option>
+                        <option>Singapore</option>
+                        <option>Vietnam</option>
+                        <option>Malaysia</option>
+                        <option>Indonesia</option>
+                        <option>Myanmar</option>
+                        <option>Cambodia</option>
+                        <option>Laos</option>
+                        <option>Brunei</option>
+                        <option>Timor-Leste</option>
+                      </optgroup>
+                      <optgroup label="East Asia">
+                        <option>Japan</option>
+                        <option>China</option>
+                        <option>South Korea</option>
+                        <option>Taiwan</option>
+                        <option>Hong Kong</option>
+                        <option>Mongolia</option>
+                      </optgroup>
+                      <optgroup label="South Asia">
+                        <option>India</option>
+                        <option>Bangladesh</option>
+                        <option>Sri Lanka</option>
+                        <option>Pakistan</option>
+                        <option>Nepal</option>
+                        <option>Bhutan</option>
+                        <option>Maldives</option>
+                      </optgroup>
+                      <optgroup label="Middle East">
+                        <option>United Arab Emirates</option>
+                        <option>Saudi Arabia</option>
+                        <option>Qatar</option>
+                        <option>Kuwait</option>
+                        <option>Jordan</option>
+                        <option>Turkey</option>
+                        <option>Israel</option>
+                      </optgroup>
+                      <optgroup label="Oceania">
+                        <option>Australia</option>
+                        <option>New Zealand</option>
+                        <option>Papua New Guinea</option>
+                        <option>Fiji</option>
+                      </optgroup>
+                      <optgroup label="Europe">
+                        <option>United Kingdom</option>
+                        <option>Germany</option>
+                        <option>France</option>
+                        <option>Spain</option>
+                        <option>Italy</option>
+                        <option>Netherlands</option>
+                        <option>Sweden</option>
+                        <option>Norway</option>
+                        <option>Denmark</option>
+                        <option>Finland</option>
+                        <option>Switzerland</option>
+                        <option>Belgium</option>
+                        <option>Portugal</option>
+                        <option>Poland</option>
+                        <option>Austria</option>
+                        <option>Greece</option>
+                        <option>Ireland</option>
+                      </optgroup>
+                      <optgroup label="Americas">
+                        <option>United States</option>
+                        <option>Canada</option>
+                        <option>Mexico</option>
+                        <option>Brazil</option>
+                        <option>Argentina</option>
+                        <option>Colombia</option>
+                        <option>Chile</option>
+                        <option>Peru</option>
+                      </optgroup>
+                      <optgroup label="Africa">
+                        <option>South Africa</option>
+                        <option>Nigeria</option>
+                        <option>Kenya</option>
+                        <option>Ethiopia</option>
+                        <option>Ghana</option>
+                        <option>Egypt</option>
+                      </optgroup>
                     </select>
                     <div className="prof-form-row">
                       <button onClick={updateProfile} className="prof-save-btn">Save</button>
@@ -1728,7 +1805,7 @@ function App() {
                 fontSize: '0.75rem',
                 fontWeight: '400'
               }}>
-                Version 125.4
+                Version 125.5
               </div>
 
             </div>
