@@ -57,6 +57,7 @@ function App() {
   
   // Quests
   const [quests, setQuests] = useState<Quest[]>([])
+  const [questsLoading, setQuestsLoading] = useState(false)
   const [questsResetHours, setQuestsResetHours] = useState<number | null>(null)
   const [photoVerifyQuestId, setPhotoVerifyQuestId] = useState<string | null>(null)
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
@@ -170,6 +171,7 @@ function App() {
   }, [messages])
 
   const fetchQuests = async () => {
+    setQuestsLoading(true)
     try {
       const response = await fetch(`${API_URL}/quests`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -186,6 +188,8 @@ function App() {
       }
     } catch (error) {
       console.error('Fetch quests error:', error)
+    } finally {
+      setQuestsLoading(false)
     }
   }
 
@@ -364,14 +368,13 @@ function App() {
   }
 
   const deleteQuest = async (questId: string) => {
-    // Warn user about daily quest limits
-    const confirmDelete = window.confirm(
-      'Are you sure you want to delete this quest?\n\n' +
-      'Note: You can only get new quests once per day (resets every 24 hours).\n' +
-      'Deleting quests won\'t give you new ones immediately!'
-    )
+    const confirmDelete = window.confirm('Are you sure you want to delete this quest? A new one will be generated to replace it.')
     
     if (!confirmDelete) return
+    
+    // Immediately remove from UI and show loading state
+    setQuests(prev => prev.filter(q => q.id !== questId))
+    setQuestsLoading(true)
     
     try {
       const response = await fetch(`${API_URL}/quests/${questId}`, {
@@ -379,16 +382,16 @@ function App() {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (response.ok) {
-        console.log('Quest deleted successfully')
-        // Optimistically remove from UI immediately so the user sees instant feedback
-        setQuests(prev => prev.filter(q => q.id !== questId))
-        fetchQuests()
+        // Fetch replacement quest — server generates one automatically
+        await fetchQuests()
       } else {
         const error = await response.text()
         console.error('Delete quest error:', response.status, error)
+        setQuestsLoading(false)
       }
     } catch (error) {
       console.error('Delete quest error:', error)
+      setQuestsLoading(false)
     }
   }
 
@@ -899,7 +902,7 @@ function App() {
                   <div style={{ fontSize: '0.75rem', color: 'rgba(240, 253, 244, 0.35)', fontStyle: 'italic' }}>Resets daily</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {quests.length === 0 ? (
+                  {quests.length === 0 && !questsLoading ? (
                     <div style={{ 
                       padding: '24px', 
                       textAlign: 'center', 
@@ -922,6 +925,32 @@ function App() {
                       )}
                     </div>
                   ) : (
+                    <>{/* quests loaded or loading placeholder shown inline below */}</>)
+                  }
+                  {questsLoading && (
+                    <div style={{
+                      padding: '18px 16px',
+                      background: 'rgba(14, 35, 20, 0.6)',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(52, 211, 153, 0.15)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      color: 'rgba(240, 253, 244, 0.5)',
+                      fontSize: '0.9rem',
+                    }}>
+                      <div style={{
+                        width: '20px', height: '20px', flexShrink: 0,
+                        borderRadius: '50%',
+                        border: '2px solid rgba(52, 211, 153, 0.2)',
+                        borderTopColor: '#34d399',
+                        animation: 'spin 0.8s linear infinite',
+                      }} />
+                      Generating your new quest...
+                      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                    </div>
+                  )}
+                  {quests.length > 0 ? (
                     quests.slice(0, 5).map((quest, index) => (
                       <div 
                         key={quest.id} 
@@ -1269,7 +1298,7 @@ function App() {
                       )}
                     </div>
                   ))
-                  )}
+                  ) : null}
                 </div>
               </div>
 
