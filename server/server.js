@@ -1055,8 +1055,17 @@ app.put('/api/quests/:questId/complete', verifyToken, async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized' })
     }
     
-    // If quest is already completed, allow toggling off without verification
+    // If quest is already completed, allow toggling off and SUBTRACT points
     if (quest.completed) {
+      // Subtract points from user
+      const user = await db.collection('users').findOne({ _id: new ObjectId(req.userId) })
+      const pointsToSubtract = (quest.points || 0) + (quest.bonusPoints || 0)
+      const newPoints = Math.max(0, (user.points || 0) - pointsToSubtract)
+      const newLevel = calculateLevel(newPoints)
+      await db.collection('users').updateOne(
+        { _id: new ObjectId(req.userId) },
+        { $set: { points: newPoints, level: newLevel, updatedAt: new Date() } }
+      )
       await db.collection('quests').updateOne(
         { _id: questId },
         { $set: { completed: false, completedAt: null } }
@@ -1064,7 +1073,7 @@ app.put('/api/quests/:questId/complete', verifyToken, async (req, res) => {
       return res.json({
         message: 'Quest unmarked',
         completed: false,
-        pointsEarned: 0,
+        pointsEarned: -pointsToSubtract,
       })
     }
     
